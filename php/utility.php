@@ -1,5 +1,12 @@
 <?php
 namespace grub;
+$active_user_v_headings = array(
+	'User ID',
+	'Name',
+	'Email',
+	'Type',
+	'Reg. Date',
+	'Last Login');
 function to_html_table($headings, $data) { 
 	echo '<div class="tbl_data">' . "\n";
 	echo "\t" . '<table>' . "\n";

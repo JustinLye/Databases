@@ -1,3 +1,4 @@
+<?php require_once('utility.php');?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +11,7 @@
 	</ul>
 	<?php
 		//require_once('../../../php/connect.php');
-		require_once('utility.php');
+		//require_once('utility.php');
 		$db = new dbconnection();
 		$response = $db->get_table("user");
 		
