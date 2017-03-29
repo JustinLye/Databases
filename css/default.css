@@ -1,17 +1,106 @@
-.content {
-	max-width: 85%;
-	height: 100%;
+* { box-sizing: border-box;}
+
+
+ul.nav-bar {
+    font-family: 'Droid Sans', sans-serif;
+	list-style-type: none; 
 	margin: auto;
-	background-color: #FFFAFA;
-	background-size: cover;
-	background-repeat: repeat-y;
-	font-family: 'Droid Sans', sans-serif;
-	padding: 15px;
+	width: 100%;
+    padding: 32px 16px;
+	overflow: hidden;
+    background-color: hsla(0, 0%, 17%, 1.0);
 }
-.bg {
-	background-color: #DCDCDC;
-	height: 100%;
-	background-size: cover;
+
+ul.nav-bar li {
+    float: left;
+}
+
+
+ul.nav-bar li a:active, a:focus {
+    outline: none;
+}
+
+ul.nav-bar li a {
+	display: inline-block;
+	color: #F0FFFF;
+	text-align: center;
+	padding: 14px 16px; 	
+	text-decoration: none;
+	transition: 0.3s; 		
+	font-size: 24px;
+}
+
+/* Change background color of links on hover */
+ul.nav-bar li a:hover {
+	background-color: #555;
+}
+
+ul.nav-bar li.dropdown {
+    display: inline-block;
+    color: #F0FFFF;
+    font-size: 24px;
+    padding: 14px 16px;
+    text-align: center;
+}
+
+ul.nav-bar li.dropdown:hover {
+    background-color: #555;
+}
+
+ul.nav-bar li.dropdown span.dropdown-content {
+    display: none;
+    position: absolute;
+    min-width: 160px;
+    z-index: 1;
+    background-color: hsla(0, 0%, 17%, 1.0);
+}
+
+ul.nav-bar li.dropdown span.dropdown-content a {
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+ul.nav-bar li.dropdown span.dropdown-content a:hover {
+    background-color: #555;
+}
+
+ul.nav-bar li.dropdown:hover span.dropdown-content {
+    display:block;
+}
+
+.usr-form {
+    font-family: 'Droid Sans', sans-serif;
+    font-size: 14pt;
+    padding: 14px 16px;
+    border: 2px solid black;
+    margin-top: 15px;
+    width: 35%;
+    background-color: #FAFAFA;
+}
+
+
+.usr-form input::after {
+    display: block;
+}
+
+.usr-form input[type=text], input[type=password], input[type=email] {
+    width: 350px;
+    height: 35px;
+    font-family: 'Droid Sans', sans-serif;
+    font-size: 12pt;
+    padding: 5px;
+}
+.usr-form select option {
+    width: 330px;
+    height: 35px;
+    font-family: 'Droid Sans', sans-serif;
+    padding: 5px;
+    font-size: 12pt;
+}
+
+.usr-form input {
+    border-radius: 5px;
 }
 
 .tbl_data {
@@ -32,72 +121,5 @@
 .tbl_data tr:nth-child(even) {
 	background-color: #F2F2F2;
 }
-
-.top_nav {
-	font-family: 'Droid Sans', sans-serif;
-	margin: auto;
-	padding: 32px 16px;
-	width: 100%;
-	background-color: hsla(0, 0%, 17%, 1.0);
-	color: #F5FFFA;
-}
-
-.top_nav ul {
-	list-style-type: none;
-	overflow: visible;
-}
-
-
-.top_nav li {
-	float: left;
-}
-
-.top_nav li a {
-	display: inline-block;
-	text-align: center;
-	padding: 14px 16px;
-	text-decoration: none;
-	transition: 0.3s;
-	font-size: 24px;
-	color: #F5FFFA;
-}
-
-.top_nav li a:hover {
-	background-color: #050505;
-}
-
-.dropdown--menu {
-	padding: 16px;
-	font-size: 24px;
-	border: none;
-	cursor: pointer;
-	display: inline-block;
-}
-
-
-.dropdown-content {
-	display: none;
-	position: absolute;
-	background-color: hsla(0, 0%, 34%, 1.0);
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-	z-index: 1;
-}
-
-.dropdown-content a {
-	text-decoration: none;
-	color: #F5FFFA;
-	display: block;
-	padding: 12px 16px;
-}
-
-.dropdown-content a:hover {
-	background-color: #000000;
-}
-
-.dropdown:hover .dropdown-content {
-	display: block;
-}
-
-* {box-sizing:border-box;}
 
 
