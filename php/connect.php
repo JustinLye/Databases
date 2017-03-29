@@ -6,6 +6,7 @@
     
 		private $_isopen;
 		private $_db_connection;
+		private $_user_select_str = "SELECT user_id, is_active, reg_date, last_login, user_type, user_name, email FROM user";
     
 		function __construct() {
 			$this->_isopen = false;
@@ -34,7 +35,7 @@
 			}
 			switch($table_name) {
 			case "user":
-				return mysqli_query($this->_db_connection, "SELECT * FROM user");
+				return mysqli_query($this->_db_connection, $this->_user_select_str);
 				break;
 			case "diner":
 				return mysqli_query($this->_db_connection, "SELECT * FROM diner");
@@ -53,13 +54,33 @@
 			}
 			
 			$sql_str = "INSERT INTO user VALUES(NULL, TRUE, NOW(), NOW(), '$type', '$name', '$email', '$password')";
-			echo 'Insertion String ' . $sql_str . "\n";
 			if(mysqli_query($this->_db_connection, $sql_str)) {
 				return true;
 			} else {
 				return false;
 			}
 		}
+		
+		public function user_search($target, $target_type, $exact_match) {
+			if(!$this->_isopen) {
+				echo ' database connection is not open';
+				return false;
+			}
+			switch($target_type) {
+				case "name":
+					if($exact_match) {
+						return mysqli_query($this->_db_connection, $this->_user_select_str . " WHERE user_name = '$target'");
+					} else {
+						return mysqli_query($this->_db_connection, "SELECT * FROM user WHERE user_name LIKE '%$target%'");
+					}
+					break;
+				default:
+					echo ' Invalid target type' . "\n";
+					return false;
+					break;
+			}
+		}
+		
 		public function get_error() {
 			if($this->_isopen) {
 				return mysqli_error($this->_db_connection);
