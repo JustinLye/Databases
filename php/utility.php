@@ -2,7 +2,7 @@
 require_once('../../../php/connect.php');
 
 class util {
-	
+	// arrays for data table/output column headings
 	private static $_active_user_v_headings = array(
 		'User ID',
 		'Name',
@@ -10,8 +10,13 @@ class util {
 		'Type',
 		'Reg. Date',
 		'Last Login');
+		
+	private static $_active_diner_v_headings = array(
+		'Name',
+		'Email',
+		'Credability');
 	public static function active_user_v_headings() { return self::$_active_user_v_headings; }
-	
+	public static function active_diner_v_headings() { return self::$_active_diner_v_headings; }
 	public static function to_html_table($headings, $data) { 
 		echo '<div class="tbl_data">' . "\n";
 		echo "\t" . '<table>' . "\n";

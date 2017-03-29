@@ -37,7 +37,7 @@
 				return mysqli_query($this->_db_connection, "SELECT * FROM active_user_v");
 				break;
 			case "diner":
-				return mysqli_query($this->_db_connection, "SELECT * FROM diner");
+				return mysqli_query($this->_db_connection, "SELECT * FROM active_diner_v");
 				break;
 			default:
 				echo $table_name . ' is not a valid table name.';
