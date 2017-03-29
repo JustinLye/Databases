@@ -9,21 +9,16 @@
     
     function __construct() {
         $this->_isopen = false;
-		echo '1';
         $db_domain = 'cs.okstate.edu';
         $db_user = 'jlye';
         $db_password = ''; //password has to be hard coded.
         $db_database = 'jlye';
         $this->_db_connection = @mysqli_connect($db_domain, $db_user, $db_password, $db_database);
         if(!$this->_db_connection) {
-          echo 'Could not connect to MySQL' . mysqli_error();
-        } else {
-          echo 'Connection open';
-        }
-        if($this->_db_connection) {
-			$this->_isopen = true;
-		} else {
+			echo 'Could not connect to MySQL' . mysqli_error();
 			$this->_isopen = false;
+        } else {
+			$this->_isopen = true;
 		}
     }
     function __destruct() {
