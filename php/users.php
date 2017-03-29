@@ -5,11 +5,8 @@
 <link rel="stylesheet" href="../css/default.css">
 </head>
 <body>
-	<p>Test</p>
 	<?php
 		require_once('../../../php/connect.php');
-		//$query = "SELECT * FROM user";
-		echo '<p>Querying</p>';
 		$db = new dbconnection();
 		$response = $db->get_table("user");
 		if($response) {
