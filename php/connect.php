@@ -71,7 +71,7 @@
 					if($exact_match) {
 						return mysqli_query($this->_db_connection, $this->_user_select_str . " WHERE user_name = '$target'");
 					} else {
-						return mysqli_query($this->_db_connection, "SELECT * FROM user WHERE user_name LIKE '%$target%'");
+						return mysqli_query($this->_db_connection, $this->_user_select_str . " WHERE user_name LIKE '%$target%'");
 					}
 					break;
 				default:
