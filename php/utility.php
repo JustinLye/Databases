@@ -1,7 +1,6 @@
 <?php
 namespace grub;
-function to_html_table($headings, $data) {
-
+function to_html_table($headings, $data) { 
 	echo '<div class="tbl_data">' . "\n";
 	echo "\t" . '<table>' . "\n";
 	echo "\t\t" . '<tr>' . "\n";
@@ -19,7 +18,5 @@ function to_html_table($headings, $data) {
 	echo "\t" . '</table>' . "\n";
 	echo '</div>' . "\n";
 }
-
 require_once('../../../php/connect.php');
-
 ?>
