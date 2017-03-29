@@ -84,6 +84,8 @@ ul.nav-bar li.dropdown:hover span.dropdown-content {
     display: block;
 }
 
+
+
 .usr-form input[type=text], input[type=password], input[type=email] {
     width: 350px;
     height: 35px;
