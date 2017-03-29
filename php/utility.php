@@ -1,22 +1,25 @@
 <?php
-
+namespace grub;
 function to_html_table($headings, $data) {
-	echo '<div class="tbl_data">';
-	echo '<table>';
-	echo '<tr>';
+
+	echo '<div class="tbl_data">' . "\n";
+	echo "\t" . '<table>' . "\n";
+	echo "\t\t" . '<tr>' . "\n";
 	foreach($headings as $h) {
-		echo '<th>' . $h . '</th>';
+		echo "\t\t\t" . '<th>' . $h . '</th>' . "\n";
 	}
-	echo '</tr>';
+	echo "\t\t" . '</tr>' . "\n";
 	while($r = mysqli_fetch_array($data, MYSQLI_ASSOC)) {
-		echo '<tr>';
+		echo "\t\t" . '<tr>' . "\n";
 		foreach($r as $info) {
-			echo '<td>' . $info . '</td>';
+			echo "\t\t\t" . '<td>' . $info . '</td>' . "\n";
 		}
-		echo '</tr>';
+		echo "\t\t" . '</tr>' . "\n";
 	}
-	echo '</table>';
-	echo '</div>';
+	echo "\t" . '</table>' . "\n";
+	echo '</div>' . "\n";
 }
+
+require_once('../../../php/connect.php');
 
 ?>
