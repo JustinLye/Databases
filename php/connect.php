@@ -6,7 +6,6 @@
     
 		private $_isopen;
 		private $_db_connection;
-		private $_user_select_str = "SELECT user_id, is_active, reg_date, last_login, user_type, user_name, email FROM user";
     
 		function __construct() {
 			$this->_isopen = false;
@@ -35,7 +34,7 @@
 			}
 			switch($table_name) {
 			case "user":
-				return mysqli_query($this->_db_connection, $this->_user_select_str);
+				return mysqli_query($this->_db_connection, "SELECT * FROM active_user_v");
 				break;
 			case "diner":
 				return mysqli_query($this->_db_connection, "SELECT * FROM diner");
@@ -69,9 +68,9 @@
 			switch($target_type) {
 				case "name":
 					if($exact_match) {
-						return mysqli_query($this->_db_connection, $this->_user_select_str . " WHERE user_name = '$target'");
+						return mysqli_query($this->_db_connection, "SELECT * FROM active_user_v WHERE user_name = '$target'");
 					} else {
-						return mysqli_query($this->_db_connection, $this->_user_select_str . " WHERE user_name LIKE '%$target%'");
+						return mysqli_query($this->_db_connection, "SELECT * FROM active_user_v WHERE user_name LIKE '%$target%'");
 					}
 					break;
 				default:
