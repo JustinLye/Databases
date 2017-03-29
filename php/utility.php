@@ -1,7 +1,8 @@
 <?php
+require_once('../../../php/connect.php');
 
 class util {
-require_once('../../../php/connect.php');	
+	
 	private static $_active_user_v_headings = array(
 		'User ID',
 		'Name',
