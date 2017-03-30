@@ -5,9 +5,11 @@
 	<link rel="stylesheet" href="../css/default.css">
 </head>
 <body>
-	<ul class = "nav-bar"><li><a href="../add_user.html">Go Back</a></li></ul>
+	<ul class = "nav-bar">
+		<li><a href="../add_user.html">Go Back</a></li>
+	</ul>
 	<?php
-		require_once('../../../php/connect.php');	
+		require_once('utility.php');	
 		$user_name = $_POST['user_name'];
 		$pass_word = $_POST['pass_word'];
 		$user_type = $_POST['user_type'];
