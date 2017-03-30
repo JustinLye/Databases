@@ -1,5 +1,5 @@
 <?php
-require_once('../../../php/connect.php');
+require_once('../../../.php/.grub_connect.php');
 
 class util {
 	// arrays for data table/output column headings
