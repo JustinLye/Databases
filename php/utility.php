@@ -1,6 +1,5 @@
 <?php
 require_once('../../../.php/.grub_connect.php');
-
 class util {
 	// arrays for data table/output column headings
 	private static $_active_user_v_headings = array(
@@ -37,4 +36,40 @@ class util {
 	}
 }
 
+class diner {
+	private $name;
+	private $id;
+	
+	public function __construct($username, $userid) {
+		$this->name = $username;
+		$this->id = $userid;
+	}
+	
+	public function get_name() {
+		return $this->name;
+	}
+	public function set_name($username) {
+		$this->name = $username;
+	}
+	public function get_id() {
+		return $this->id;
+	}
+	public function set_id($userid) {
+		$this->id = $userid;
+	}
+}
+
+/*
+class entree {
+	private $_id;
+	private $_description;
+	private $_img_src;
+	private $_img_name;
+	private $_location_id;
+	
+	public function __construct($init_id) {
+		
+	}
+}
+*/
 ?>

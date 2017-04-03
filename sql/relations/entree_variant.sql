@@ -5,4 +5,4 @@ CREATE TABLE entree_variant(
 	entree_size VARCHAR(20) NOT NULL,
 	price DECIMAL(6,2) NOT NULL,
 	delivery_time_estimate SMALLINT UNSIGNED NULL,
-	CONSTRAINT FOREIGN KEY(entree_id) REFERENCES entree(entree_id));
+	CONSTRAINT FOREIGN KEY(entree_id) REFERENCES entree(entree_id) ON DELETE CASCADE);
