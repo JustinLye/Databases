@@ -9,9 +9,16 @@
 		<li><a href="../index.html">Home</a></li>
 	</ul>
 	<?php
-		echo "<p>Test</p>";
+		
 		require_once('utility.php');
-		echo "<p>Any errors out there??</p>";
+		$db = new dbconnection;
+		
+		if($db->upload_image_db($_FILES["file_to_upload"], $_POST["submit"])) {
+			echo "<p>File was uploaded.</p>";
+		} else {
+			echo "<p>File upload failed.</p>";
+		}
+		
 	?>
 
 </body>
