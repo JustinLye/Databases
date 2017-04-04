@@ -21,6 +21,9 @@
 		private $_min_password_len;
 		private $_valid_user_types;
 		private static $_config_path = ""; //enter path to configuration file
+		private static $_img_source_id = 1;
+		private static $_valid_image_ext = array("jpg", "png", "gif", "jpeg");
+		private static $_max_image_size = 750000;
 		function __construct() {
 			$this->_isopen = false;
 			$config = parse_ini_file(self::$_config_path);
@@ -41,6 +44,102 @@
 		function __destruct() {
 			if($this->_isopen) {
 				mysqli_close($this->_db_connection);
+			}
+		}
+		
+		
+		public function upload_image($image_file, $post_id) {
+			//make sure the file is not 'fake'
+			if(!$this->is_image_file($image_file, $post_id) {
+				echo "<p>Image is not a vaild image file.</p>";
+				return false;
+			}
+			//get full upload file path
+			if(!$upload_file_path = $this->get_image_file($image_file)) {
+				echo "<p>Error occurred getting image file path</p>";
+				return false;
+			}
+			//check file extentsion
+			if(!$this->is_valid_img_ext($upload_file_path)) {
+				return false;
+			}
+			//check for existing file
+			if(file_exists($upload_file_path)) {
+				echo "<p>Image $upload_file_path already exists</p>";
+				return false;
+			}
+			//check file size
+			if($image_file["size"] > self::$_max_image_size) {
+				echo "<p>Image size of $image_file['size'] exceeds maximum size allowed.</p>";
+				return false;
+			}
+			//upload file
+			return move_uploaded_file($image_file['tmp_name'], $upload_file_path);
+			
+		}
+		
+		private function image_id_prefix() {
+			if(!$this->reconnect()) {
+				echo "<p>Error occurred connecting to database.</p>";
+				return false;
+			}
+			if(!$prefix = mysqli_query($this->_db_connection, "SELECT COUNT(image_id)+1 FROM image")) {
+				return false;
+			} else {
+				return $prefix;
+			}
+		}
+		
+		private function is_image_file($image_file, $post_id) {
+			if(isset($post_id)) {
+				$check = getimagesize($image_file["tmp_name"]);
+				if($check !== false) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		
+		private function get_image_source_dir() {
+			if(!$this->reconnect()) {
+				return false;
+			}
+			
+			$stmt = mysqli_prepare($this->_db_connection, "SELECT image_source_dir FROM image_source WHERE image_source_id = ?");
+			$stmt->bind_param('i',self::$_image_source_id);
+			$stmt->execute();
+			if(!$result = mysqli_fetch_array($stmt->get_result())) {
+				echo "<p>Error occurred fetching image_source_dir</p>";
+				return false;
+			} else {
+				$d = $result['image_source_id'];
+				if($d[strlen($d)-1] != '\\' and $d[strlen($d)-1] != '/') {
+					$d += '/';
+				}
+				return $d;
+			}
+		}
+		
+		private function get_image_file($image_file) {
+			if(!$source_dir = $this->get_image_source_dir()) {
+				return false;
+			}
+			if(!$prefix = $this->image_id_prefix()) {
+				return false;
+			}
+			return $source_dir . $prefix . basename($image_file["name"]);
+		}
+		
+		private function is_valid_img_ext($image_file_path) {
+			$img_ext = pathinfo($image_file_path, PATHINFO_EXTENSION);
+			if($img_ext != self::$_valid_image_ext[array_search($img_ext, self::$_valid_image_ext, true)]) {
+				echo "<p>Image extension $img_ext is not a valid image extention.</p>";
+				return false;
+			} else {
+				return true;
 			}
 		}
 		
@@ -428,8 +527,6 @@
 				return false;
 			}
 		}
-		
-
   }
   
   class location_info {
@@ -440,22 +537,6 @@
 	  public $street;
 	  public $zip;
 	  public $phone;
-	  /*public function __construct(
-		$init_name,
-		$init_country,
-		$init_state,
-		$init_city,
-		$init_street,
-		$init_zip,
-		$init_phone) {
-				$this->name = $init_name;
-				$this->country = $init_country;
-				$this->state = $init_state;
-				$this->city = $init_city;
-				$this->street = $init_street;
-				$this->zip = $init_zip;
-				$this->phone = $init_phone;
-		}*/
   }
   
   class restaurant {
