@@ -20,7 +20,7 @@
 		private $_db_connection; //mysql database connection
 		private $_min_password_len;
 		private $_valid_user_types;
-		private static $_config_path = ""; //enter path to configuration file
+		private static $_config_path = "../../../.dbconfig/.grub.config.ini"; //enter path to configuration file
 		function __construct() {
 			$this->_isopen = false;
 			$config = parse_ini_file(self::$_config_path);
