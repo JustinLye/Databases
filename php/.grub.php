@@ -402,20 +402,51 @@ class grub_db {
 		//Open connection
 		if(!$this->connect()) {
 			$this->log_error("active_user()", "Could not determine if user is active because connect to database failed.","ERROR");
+			$this->disconnect();
 			return false;
 		}
 		//Escape username
 		if(!$uname = $this->escape_str($username)) {
 			$this->log_error("active_user()", "Could not determine if user is active because $username string escape failed.", "ERROR");
+			$this->disconnect();
 			return false;
 		}
 		
 		//Prepare SQL statement
 		if(!$stmt = $this->dblink->prepare("SELECT is_active FROM user WHERE username = ?")) {
-			$this->log_error("active_user()", "Could not determine if user is active because failure to prepare SQL statement.", "ERROR");
+			$this->log_error("active_user()", "Could not determine if user is active because failure to prepare SQL statement. Error encountered: $stmt->error.", "ERROR");
+			$this->disconnect();
 			return false;
 		}
-		//
+		
+		//Bind parameters
+		if(!$stmt->bind_param('s', $uname)) {
+			$this->log_error("active_user()", "Could not determine if user is active because failure to bind parameters. Error encountered: $stmt->error.","ERROR");
+			$this->disconnect();
+			return false;
+		}
+		
+		//Execute query
+		if(!$stmt->execute()) {
+			$this->log_error("active_user()", "Could not determine if user is active because failure when executing query. Error encountered: $stmt->error.", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		
+		//Bind results
+		if(!$stmt->bind_result($result)) {
+			$this->log_error("active_user()", "Could not determine if user is active because failure when binding result. Error encountered: $stmt->error.", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		
+		//Fetch result
+		if(!$stmt->fetch()) {
+			$this->log_error("active_user()", "Could not determine if user is active because failure when fetching result. Error encountered: $stmt->error.", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		
 	}
 	
 // END -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
