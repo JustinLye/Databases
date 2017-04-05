@@ -1,5 +1,6 @@
 <?php
 require_once('../../../.php/.grub_connect.php');
+require_once('../../../.php/.grub.php');
 class util {
 	// arrays for data table/output column headings
 	private static $_active_user_v_headings = array(

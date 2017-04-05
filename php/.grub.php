@@ -61,24 +61,23 @@
 	
 	
 */
-
 class grub_db {
 	//properties
-	private const CONFIG_FILE_PATH = "../../../.dbconfig/.grub.config.ini"; //location of connection configuration files
-	private const DEFAULT_TIMEOUT_PERIOD = 5;//timeout period is set so idle connections do not remain open taking up resources
-	private const MIN_PASSWORD_LENGTH = 6; //minimum password length (this is the only restriction on passwords)
-	private const DEFAULT_IMAGE_SOURCE_ID = 1;
-	private const MAX_IMAGE_SIZE = 750000; //maximum size of file for image uploads
-	private const VALID_USER_TYPE = array("diner", "restaurant"); //array of valid user types
-	private const VALID_IMAGE_EXTENSIONS = array("jpg","jpeg", "png", "gif"); //array of valid extensions for image uploads
-	private const UNKNOWN_STATE = 0; //default connection state meaning it is the status of a connection to the MySQL database is unknown because no attempt to connect to the database has been made.
-	private const STABLE_STATE = 1; //this connection state means connections have been made without encountering any critical errors.
-	private const FAILURE_STATE = 2; //this connection state means some critical error was encountered when connecting to the database and it is not likely a connection will be possible without changing some external values or conditions. Examples of conditions that would cause a critcal state are non-existent configuration file or invalid connection settings, password, etc.
+	private $CONFIG_FILE_PATH = "/home/jlye/.dbconfig/.grub.config.ini"; //location of connection configuration files
+	private $DEFAULT_TIMEOUT_PERIOD = 5;//timeout period is set so idle connections do not remain open taking up resources
+	private $MIN_PASSWORD_LENGTH = 6; //minimum password length (this is the only restriction on passwords)
+	private $DEFAULT_IMAGE_SOURCE_ID = 1;
+	private $MAX_IMAGE_SIZE = 750000; //maximum size of file for image uploads
+	private $VALID_USER_TYPE = array("diner", "restaurant"); //array of valid user types
+	private $VALID_IMAGE_EXTENSIONS = array("jpg","jpeg", "png", "gif"); //array of valid extensions for image uploads
+	private $UNKNOWN_STATE = 0; //default connection state meaning it is the status of a connection to the MySQL database is unknown because no attempt to connect to the database has been made.
+	private $STABLE_STATE = 1; //this connection state means connections have been made without encountering any critical errors.
+	private $FAILURE_STATE = 2; //this connection state means some critical error was encountered when connecting to the database and it is not likely a connection will be possible without changing some external values or conditions. Examples of conditions that would cause a critcal state are non-existent configuration file or invalid connection settings, password, etc.
 	
-	private dblink; //mysqli connection
-	private error_msg_log = array(); //errors are added to this log using the log_error() method.
-	private error_count = 0; //errors logged via the log_error() message with the msg_type == "ERROR" will increment this property.
-	private connection_state; //the value of the currrent connection_state
+	private $dblink; //mysqli connection
+	private $error_msg_log = array(); //errors are added to this log using the log_error() method.
+	private $error_count = 0; //errors logged via the log_error() message with the msg_type == "ERROR" will increment this property.
+	private $connection_state; //the value of the currrent connection_state
 	
 /* -- CONSTRUCTOR and DESTRUCTOR -- */
 	
@@ -89,7 +88,7 @@ class grub_db {
 		if(!file_exists($this->CONFIG_FILE_PATH)) { //ERROR encountered
 			$this->connection_state = $this->FAILURE_STATE; //set state to failure.
 			$this->log_error("__construct()", "Configuration file does not exist or given path is not valid.","ERROR"); //log error message
-		}		
+		}
 		$this->dblink = mysqli_init();//initilize mysqli object
 		if($this->dblink->errno) { //check for any errors on initalization
 			$this->connection_state = $this->FAILURE_STATE; //set state to failure
@@ -130,12 +129,19 @@ class grub_db {
 				equal to zero.
 																*/
 	
-	public function get_error_log() {
-		//Initialize error log string with simple heading.
-		$errlog = "Logged Errors:\n";
-		//loop through the error log concatenating each message to the error string + a newline.
-		foreach($this->error_msg_log as $msg) {
-			$errlog .= $msg . "\n";
+	public function get_error_log($use_newline = true) {
+		//loop through the error log concatenating each message to the error string + a newline or <br>
+		if($use_newline) {
+			$errlog = "";
+			foreach($this->error_msg_log as $msg) {
+				$errlog .= $msg . "\n";
+			}
+		} else {
+			$errlog = "<p>";
+			foreach($this->error_msg_log as $msg) {
+				$errlog .= $msg . "<br>";
+			}
+			$errlog .= "</p>";
 		}
 		//clear the error_msg_log array
 		unset($this->error_msg_log);
@@ -156,7 +162,7 @@ class grub_db {
 		} else {
 			return false;
 		}
-
+	}
 /*  -----------------------------------------------------------
 	Method	-	failure_state()
 	Summary -	Returns true if grub_db has entered a failure
@@ -235,7 +241,7 @@ class grub_db {
 				return false;
 			}
 			if(!$this->dblink->real_connect($config['servername'], $config['username'], $config['password'], $config['dbname'])) {//Attempt to connect to server using configuration settings
-				$this->log_error("connect()", "Attempt to connect to MySQL database failed for the given configuration settings. Error encountered: $this->dblink->connect_error", "ERROR");//ERROR encountered				
+				$this->log_error("connect()", "Attempt to connect to MySQL database failed for the given configuration settings. Error encountered: " . $this->dblink->connect_error . " " . $this->dblink->error , "ERROR");//ERROR encountered				
 				return false;
 			}
 			return true;
@@ -253,7 +259,7 @@ class grub_db {
 		//Check if a connection is active.
 		if($this->is_connected()) {
 			if(!$this->dblink->close) { //attempt to close connection
-				$this->log_error("disconnect()", "Connection failed to close. Error encountered: $this->dblink->error.", "ERROR");
+				$this->log_error("disconnect()", "Connection failed to close. Error encountered: " . $this->dblink->error, "ERROR");
 				return false;
 			} else {
 				return true;
@@ -322,26 +328,26 @@ class grub_db {
 			return false;
 		}
 		//prepare SQL statement to retrieve password hash.
-		if(!$stmt = $this->dblink->prepare("SELECT password FROM user WHERE username = ?")) {
-			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred preparing SQL statement. Error encountered: $stmt->error", "ERROR");
+		if(!$stmt = $this->dblink->prepare("SELECT password FROM user WHERE user_name = ?")) {
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred preparing SQL statement. Error encountered: " . $this->dblink->error, "ERROR");
 			$this->disconnect();
 			return false;
 		}
 		//bind username to prepared statement
 		if(!$stmt->bind_param('s', $username)) {
-			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred binding parameters to prepared statement. Error encountered: $stmt->error", "ERROR");
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred binding parameters to prepared statement.", "ERROR");
 			$this->disconnect();
 			return false;
 		}
 		//execute prepared statement
 		if(!$stmt->execute()) {
-			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error encountered execute prepared query. Error encountered: $stmt->error", "ERROR");
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error encountered execute prepared query. Error encountered: " . $this->dblink->error, "ERROR");
 			$this->disconnect();
 			return false;
 		}
 		//bind result variables
 		if(!$stmt->bind_result($hash)) {
-			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred while trying to bind result variables. Error encountered: $stmt->error", "ERROR");
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred while trying to bind result variables. Error encountered: " . $this->dblink->error, "ERROR");
 			$this->disconnect();
 			return false;
 		}
@@ -349,9 +355,9 @@ class grub_db {
 		if(!$result = $stmt->fetch()) {
 			//check if the user does not exist or some other error was found.
 			if($result === false) {
-				$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error encountered fetching result. Error encountered: $stmt->error", "ERROR");
+				$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error encountered fetching result. Error encountered: " . $this->dblink->error, "ERROR");
 			} else {
-				$this->log_error("get_password_hash()", "Failed to retrieve password hash. No record of $username was found. Error encountered: $stmt->error", "ERROR");
+				$this->log_error("get_password_hash()", "Failed to retrieve password hash. No record of $username was found. Error encountered: " . $this->dblink->error, "ERROR");
 			}
 			$this->disconnect();
 		}
@@ -382,7 +388,7 @@ class grub_db {
 			$this->log_error("vaild_user()","Could not validate user because password hash was not successfully retrieved", "WARNING");
 			return false;
 		}
-		if(!password_verify($uname, $password)) {
+		if(!password_verify($password, $hash)) {
 			$this->log_error("valid_user()", "Invalid username and password.", "WARNING");
 			return false;
 		}
@@ -446,7 +452,7 @@ class grub_db {
 			$this->disconnect();
 			return false;
 		}
-		
+		return $result;
 	}
 	
 // END -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
