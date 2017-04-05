@@ -411,6 +411,7 @@ class grub_db {
 			$this->disconnect();
 			return false;
 		}
+		$username = filter_var($username);
 		//Escape username
 		if(!$uname = $this->escape_str($username)) {
 			$this->log_error("active_user()", "Could not determine if user is active because $username string escape failed.", "ERROR");
@@ -420,14 +421,14 @@ class grub_db {
 		
 		//Prepare SQL statement
 		if(!$stmt = $this->dblink->prepare("SELECT is_active FROM user WHERE username = ?")) {
-			$this->log_error("active_user()", "Could not determine if user is active because failure to prepare SQL statement. Error encountered: $stmt->error.", "ERROR");
+			$this->log_error("active_user()", "Could not determine if user is active because failure to prepare SQL statement. Error encountered: " . $this->dblink->error, "ERROR");
 			$this->disconnect();
 			return false;
 		}
 		
 		//Bind parameters
 		if(!$stmt->bind_param('s', $uname)) {
-			$this->log_error("active_user()", "Could not determine if user is active because failure to bind parameters. Error encountered: $stmt->error.","ERROR");
+			$this->log_error("active_user()", "Could not determine if user is active because failure to bind parameters. Error encountered: " . $this->dblink->error ,"ERROR");
 			$this->disconnect();
 			return false;
 		}
@@ -458,7 +459,6 @@ class grub_db {
 // END -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
 /* ============================================================= */
 }
-
 
 
 ?>
