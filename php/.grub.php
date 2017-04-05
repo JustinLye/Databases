@@ -229,7 +229,6 @@ class grub_db {
 
 																*/	
 	private function connect() {
-		
 		if(!$this->is_connected()) { //check if connection is inactive.
 			if(!$config = $this->get_config_info()) {//Get configuration information map/array.
 				$this->log_error("connect()", "Cannot connect without configuration info.", "ERROR");//ERROR encountered
@@ -267,6 +266,45 @@ class grub_db {
 /* ============================================================= */
 
 
+/* ============================================================= */
+// START -- INPUT CHECKING FUNCTIONS
+
+/*	-----------------------------------------------------------	
+	Method	-	escape_str()
+	Summary	-	Checks if dblink is set and returns escaped
+				string.
+																*/
+
+	private function escape_str($input_str) {
+		if(!isset($this->dblink)) {
+			$this->log_error("escape_str()","Could not escape string because dblink is not set.", "ERROR");
+			return false;
+		}
+		return $this->dblink->real_escape_string($input_str);
+	}
+																
+/*	-----------------------------------------------------------	
+	Method 	-	escape_strings()
+	Summary -	Checks if dblink is set and returns an array
+				of escaped strings
+																*/
+																
+	private function escape_strings($input_strings) {
+		if(!isset($this->dblink)) {
+			$this->log_error("escape_strings()", "Could not escape strings because dblink is not set.", "ERROR");
+			return false;
+		}
+		$return_str = array();
+		foreach($input_strings as $str) {
+			$return_str[] = $this->dblink->real_escape_string($str);
+		}
+		return $return_str;
+	}
+
+// END -- INPUT CHECKING FUNCTIONS
+/* ============================================================= */
+
+
 
 /* ============================================================= */
 // START -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
@@ -278,9 +316,108 @@ class grub_db {
 																*/
 
 	private function get_password_hash($username) {
-		
+		//attempt to connect to MySQL database
+		if(!$this->connect()) {
+			$this->log_error("get_password_hash()", "Failed to retreive password hash.", "ERROR");
+			return false;
+		}
+		//prepare SQL statement to retrieve password hash.
+		if(!$stmt = $this->dblink->prepare("SELECT password FROM user WHERE username = ?")) {
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred preparing SQL statement. Error encountered: $stmt->error", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		//bind username to prepared statement
+		if(!$stmt->bind_param('s', $username)) {
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred binding parameters to prepared statement. Error encountered: $stmt->error", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		//execute prepared statement
+		if(!$stmt->execute()) {
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error encountered execute prepared query. Error encountered: $stmt->error", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		//bind result variables
+		if(!$stmt->bind_result($hash)) {
+			$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error occurred while trying to bind result variables. Error encountered: $stmt->error", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		//fetch result
+		if(!$result = $stmt->fetch()) {
+			//check if the user does not exist or some other error was found.
+			if($result === false) {
+				$this->log_error("get_password_hash()", "Failed to retrieve password hash. Error encountered fetching result. Error encountered: $stmt->error", "ERROR");
+			} else {
+				$this->log_error("get_password_hash()", "Failed to retrieve password hash. No record of $username was found. Error encountered: $stmt->error", "ERROR");
+			}
+			$this->disconnect();
+		}
+		return $hash;
 	}
+
+/*	-----------------------------------------------------------	
+	Method 	-	valid_user()
+	Summary	-	Returns user_verify object if hash is
+				successfully verified for give username and
+				password. Calls grub_db::get_password_hash()
+				and verifies username and password.
+																*/
 																
+	public function valid_user($username, $password) {
+		//Open connection
+		if(!$this->connect()) {
+			$this->log_error("valid_user()", "Could not validate user because connect to database failed.","ERROR");
+			return false;
+		}
+		//Escape username
+		if(!$uname = $this->escape_str($username)) {
+			$this->log_error("valid_user()", "Could not validate user because $username string escape failed.", "ERROR");
+			return false;
+		}
+		//Get password hash. Return false if password hash retrieval fails.
+		if(!$hash = $this->get_password_hash($uname)) {
+			$this->log_error("vaild_user()","Could not validate user because password hash was not successfully retrieved", "WARNING");
+			return false;
+		}
+		if(!password_verify($uname, $password)) {
+			$this->log_error("valid_user()", "Invalid username and password.", "WARNING");
+			return false;
+		}
+		return true;
+	}
+
+	
+/*	-----------------------------------------------------------	
+	Method	-	get_user_info()
+	Summary	-	Returns user info from active table if valid.
+	
+/*	-----------------------------------------------------------	
+	Method 	-	active_user()
+	Summary -	Checks if a given username is active
+																*/
+	public function active_user($username) {
+		//Open connection
+		if(!$this->connect()) {
+			$this->log_error("active_user()", "Could not determine if user is active because connect to database failed.","ERROR");
+			return false;
+		}
+		//Escape username
+		if(!$uname = $this->escape_str($username)) {
+			$this->log_error("active_user()", "Could not determine if user is active because $username string escape failed.", "ERROR");
+			return false;
+		}
+		
+		//Prepare SQL statement
+		if(!$stmt = $this->dblink->prepare("SELECT is_active FROM user WHERE username = ?")) {
+			$this->log_error("active_user()", "Could not determine if user is active because failure to prepare SQL statement.", "ERROR");
+			return false;
+		}
+		//
+	}
+	
 // END -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
 /* ============================================================= */
 }
