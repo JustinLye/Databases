@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test file upload</title>
+	<link rel="stylesheet" href="../css/default.css">
+</head>
+<body>
+	<ul class="nav-bar">
+		<li><a href="../index.html">Home</a></li>
+	</ul>
+	<div class="usr-form">
+		<form action="../php/test_file_upload.php" method="post" enctype="multipart/form-data">
+			Select image to upload:
+			<input type="file" name="file_to_upload" id="file_to_upload" />
+			<input type="submit" name="submit" value="Upload" />
+		</form>
+	</div>
+</body>
+</html>
