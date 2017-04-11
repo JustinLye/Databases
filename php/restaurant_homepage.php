@@ -12,6 +12,9 @@
 		<li><a href="logout.php">Logout</a></li>
 		<li><a href="../html/add_location.html">Add Location</a></li>
 	</ul>
+	<?php
+		var_dump($_SESSION['grub_user']);
+	?>
 	
 </body>
 </html>

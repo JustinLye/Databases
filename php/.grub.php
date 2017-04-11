@@ -57,7 +57,7 @@
 			public functions available to users will also assume the user making to function call has not
 			performed any check or valiation of the input it (the user) is providing. So some checking, by external
 			users, may be redundant. 
-			
+
 	
 	
 */
@@ -366,7 +366,7 @@ class grub_db {
 
 /*	-----------------------------------------------------------	
 	Method 	-	valid_user()
-	Summary	-	Returns user_verify object if hash is
+	Summary	-	Returns true if hash is
 				successfully verified for give username and
 				password. Calls grub_db::get_password_hash()
 				and verifies username and password.
@@ -381,24 +381,79 @@ class grub_db {
 		//Escape username
 		if(!$uname = $this->escape_str($username)) {
 			$this->log_error("valid_user()", "Could not validate user because $username string escape failed.", "ERROR");
+			$this->disconnect();
 			return false;
 		}
 		//Get password hash. Return false if password hash retrieval fails.
 		if(!$hash = $this->get_password_hash($uname)) {
 			$this->log_error("vaild_user()","Could not validate user because password hash was not successfully retrieved", "WARNING");
+			$this->disconnect();
 			return false;
 		}
 		if(!password_verify($password, $hash)) {
 			$this->log_error("valid_user()", "Invalid username and password.", "WARNING");
+			$this->disconnect();
 			return false;
 		}
+		$this->disconnect();
 		return true;
 	}
 
+
+/*	-----------------------------------------------------------	
+	Method	-	validate_and_connect()
+	Summary	-	Common code, checks user credentials and
+				connects to database. Returns true if successfully
+				and false if not.
+																*/
+	private function validate_and_connect($username, $password) {
+		if(!$this->valid_user($username, $password)) {
+			$this->log_error(__FUNCTION__, "User validation failed. User is not valid.", "ERROR");
+			return false;
+		}
+		if(!$this->connect()) {
+			$this->log_error(__FUNCTION__, "User is valid, but failed to reconnect to system. Connection to database failed.", "ERROR");
+			return false;
+		}
+		return true;
+		
+	}
+																
 	
 /*	-----------------------------------------------------------	
 	Method	-	get_user_info()
 	Summary	-	Returns user info from active table if valid.
+																*/
+	private function get_user_info($username, $password) {
+		if(!$this->validate_and_connect($username, $password)) {
+			$this->log_error(__FUNCTION__, "User validation failed, could not get user info.", "ERROR");
+			return false;
+		}
+		if(!$stmt = $this->dblink->prepare("SELECT * FROM active_user_v WHERE user_name = ?")) {
+			$this->log_error(__FUNCTION__, "Could not retrieve user info. Prepare statement failed. " . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		if(!$stmt->bind_param('s', $username)) {
+			$this->log_error(__FUNCTION__, "Could not retrieve user info. Bind parameters failed. " . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		if(!$stmt->execute()) {
+			$this->log_error(__FUNCTION__, "Could not retrieve user info. Query execution failed. " . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		if(!$result = $stmt->get_result()) {
+			$this->log_error(__FUNCTION__, "Could not retrieve user info. Failed to get result. " . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		$user_info = $result->fetch_array(MYSQLI_ASSOC);
+		$this->disconnect();
+		return $user_info;
+	}
+	
 	
 /*	-----------------------------------------------------------	
 	Method 	-	active_user()
@@ -453,11 +508,62 @@ class grub_db {
 			$this->disconnect();
 			return false;
 		}
+		//disconnect
+		$this->disconnect();
 		return $result;
 	}
 	
+/*	-----------------------------------------------------------	
+	Method	-	update_last_login()
+	Summary	-	Sets last login time to NOW() for valid user.
+				Returns true on success and false on failure.
+																*/	
+	private function update_last_login($username, $password) {
+		if(!$this->validate_and_connect($username, $password)) {
+			$this->log_error(__FUNCTION__, "Cannot update last login for invalid user.", "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		if(!$stmt = $this->dblink->prepare("UPDATE user SET last_login = NOW() WHERE user_name = ?")) {
+			$this->log_error(__FUNCTION__, "Error occurred preparing statement." . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		if(!$stmt->bind_param('s', $username)) {
+			$this->log_error(__FUNCTION__, "Error occurred binding parameters." . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		if(!$stmt->execute()) {
+			$this->log_error(__FUNCTION__, "Error occurred executing prepared statement. " . $this->dblink->error, "ERROR");
+			$this->disconnect();
+			return false;
+		}
+		$this->disconnect();
+		return true;
+	}
+/*	-----------------------------------------------------------	
+	Method	-	login()
+	Summary	-	Returns user info from active_user_v view if
+				given username as password is valid and user
+				is active.
+																*/
+	public function login($username, $password) {
+		//connecting to use escape string
+		if(!$this->connect()) {
+			$this->log_error(__FUNCTION__, "Could not login. Connection to database failed.", "ERROR");
+			return false;
+		}
+		$uname = $this->escape_str(filter_var($username));
+		//get_user_info will check for connection, validate user, and disconnect (i.e. no disconnect is called here)
+		$user_info = $this->get_user_info($uname, $password);
+		$this->update_last_login($username, $password);
+		return $user_info;
+	}
 // END -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
 /* ============================================================= */
+
+
 }
 
 

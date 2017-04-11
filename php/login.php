@@ -5,15 +5,75 @@
 	<link rel="stylesheet" href="../css/default.css">
 </head>
 <body>
+	<?php session_start() ?>
 	<ul class="nav-bar">
 		<li><a href="../index.html">Home</a></li>
 	</ul>
+	<div class="usr-form">
+		<form action="login.php" method="post" id="user_login">
+			<table>
+				<tr>
+					<td>User Name</td>
+					<td><input type="text" name="username" placeholder="Enter User Name..." /></td>
+				</tr>
+				<tr>
+					<td>Password</td>
+					<td><input type="password" name="password" placeholder="Enter Password..." /></td>
+				</tr>
+				<?php
+					if(!$_SERVER['REQUEST_METHOD'] != 'POST') {
+						if(isset($_SESSION['login_failed'])) {
+							if($_SESSION['login_failed']) {
+								echo "<tr>\n\t<td></td>\n\t<td style=\"color:red;\">Login Failed</td></tr>";
+							}
+						}
+						$_SESSION['login_failed'] = false;
+					}
+				?>
+				<tr>
+					<td></td>
+					<td><input type="submit" name="submit" value="Login" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>	
 	<?php
-		require_once('utility.php'); //has valid_user() function
-		$db = new dbconnection;
-		$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
-		$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
-		$user_id = $db->login($username, $password);
+		if($_SERVER['REQUEST_METHOD'] == 'POST') {
+			//require_once('utility.php'); //has valid_user() function
+			require_once('../../../.php/.grub.php');
+			$db = new grub_db;
+			$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
+			$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+			if(!isset($_SESSION['login_failed'])) {
+				$_SESSION['login_failed'] = false;
+			}
+			if(!$user_info = $db->login($username, $password)) {
+				echo '<p>User not valid.</p>';
+				$_SESSION['login_errors'] = $db->get_error_log(false);
+				$_SESSION['login_failed'] = true;
+				$_SESSION['logged_in'] = false;
+				header('Location: login.php');
+			} else {
+				$_SESSION['grub_user'] = $user_info;
+				$_SESSION['logged_in'] = true;
+				if($user_info['user_type'] == 'restaurant') {
+					header('Location: restaurant_homepage.php');
+				} else {
+					echo "<p>diner</p>";
+				}
+			}
+		} else {
+			if(isset($_SESSION['logged_in']) and isset($_SESSION['grub_user'])) {
+				if($_SESSION['logged_in']) {
+					if($_SESSION['grub_user']['user_type'] == 'restaurant') {
+						header('Location: restaurant_homepage.php');
+					} else {
+						echo "<p>diner</p>";
+					}
+				}
+			}
+		}
+		/*$user_id = $db->login($username, $password);
 		if(!$user_id) {
 			echo '<p>User is not valid</p>';
 		} else {
@@ -28,7 +88,7 @@
 				header('Location: restaurant_homepage.php');
 			}
 			
-		}
+		}*/
 	?>
 </body>
 </html>
