@@ -20,16 +20,6 @@
 					<td>Password</td>
 					<td><input type="password" name="password" placeholder="Enter Password..." /></td>
 				</tr>
-				<?php
-					if(!$_SERVER['REQUEST_METHOD'] != 'POST') {
-						if(isset($_SESSION['login_failed'])) {
-							if($_SESSION['login_failed']) {
-								echo "<tr>\n\t<td></td>\n\t<td style=\"color:red;\">Login Failed</td></tr>";
-							}
-						}
-						$_SESSION['login_failed'] = false;
-					}
-				?>
 				<tr>
 					<td></td>
 					<td><input type="submit" name="submit" value="Login" /></td>
@@ -44,18 +34,11 @@
 			$db = new grub_db;
 			$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
 			$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
-			if(!isset($_SESSION['login_failed'])) {
-				$_SESSION['login_failed'] = false;
-			}
 			if(!$user_info = $db->login($username, $password)) {
 				echo '<p>User not valid.</p>';
-				$_SESSION['login_errors'] = $db->get_error_log(false);
-				$_SESSION['login_failed'] = true;
-				$_SESSION['logged_in'] = false;
 				header('Location: login.php');
 			} else {
 				$_SESSION['grub_user'] = $user_info;
-				$_SESSION['logged_in'] = true;
 				if($user_info['user_type'] == 'restaurant') {
 					header('Location: restaurant_homepage.php');
 				} else {

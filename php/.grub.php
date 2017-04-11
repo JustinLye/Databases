@@ -560,11 +560,17 @@ class grub_db {
 		$this->update_last_login($username, $password);
 		return $user_info;
 	}
+	
 // END -- USER RELATED FUNCTIONS FOR LOGIN AND SIGN-UP
 /* ============================================================= */
 
+/* ============================================================= */
+// START -- RESTAURANT AND LOCATION RELATED FUNCTIONS
 
-}
+
+// END -- RESTAURANT AND LOCATION RELATED FUNCTIONS
+/* ============================================================= */
+} // END -- Class grub_db
 
 
 ?>

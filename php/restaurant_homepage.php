@@ -14,6 +14,7 @@
 	</ul>
 	<?php
 		var_dump($_SESSION['grub_user']);
+		unset($_SESSION['grub_user']);
 	?>
 	
 </body>
