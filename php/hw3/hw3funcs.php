@@ -71,7 +71,7 @@ class q1 {
                     </form>
                 </div>
                 <p>Table before adding new user.<p>";
-    public static $PartA_AfterSuccessfulInsertString = "<h3>Query that involves one table. (1.a)</h3>
+    public static $PartA_AfterFailedInsertString = "<h3>Query that involves one table. (1.a)</h3>
                 <p style=\"color: red;\">Add user failed</p>
                 <p>Fill out the form and click the submit button to add a user to the table</p>
                 <div class=\"usr-form\">
@@ -105,8 +105,8 @@ class q1 {
                         </table>
                     </form>
                 </div>
-                <p>Table before adding new user.<p>";
-    public static $PartA_AfterFailedInsertString = "<h3>Query that involves one table. (1.a)</h3>
+                <p>Table before adding new user.</p>";
+    public static $PartA_AfterSuccessfulInsertString = "<h3>Query that involves one table. (1.a)</h3>
                 <p style=\"color: green;\">New user successfully added</p>
                 <p>Fill out the form and click the submit button to add a user to the table</p>
                 <div class=\"usr-form\">
@@ -140,48 +140,35 @@ class q1 {
                         </table>
                     </form>
                 </div>
-                <p>Table <strong>after<strong> adding new user.<p>";
+                <p>Table <strong>after</strong> adding new user.</p>";
     private $dbc;
     private $errlog;
     public function __construct() {
         $this->dbc = new db_connection;
-        $this->errlog = new error_keeper();
+        $this->errlog = new error_keeper;
     }
     
     public function get_user_table() {
         return $this->dbc->dblink()->query("SELECT * FROM active_user_v");
     }
     public function add_user($name, $email, $password, $type) {
-        $result = true;
         $link = $this->dbc->dblink();
-        if(strlen($esc_name = $link->real_escape_str(filter_var($name,FILTER_SANITIZE_STRING))) <= 0) {
-            $result = false;
-            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $this->dbc->errors());
-        }
-        if(strlen($esc_email = $link->real_escape_str(filter_var($email, FILTER_SANITIZE_STRING))) <= 0) {
-            $result = false;
-            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $this->dbc->errors());            
-        }
-        if(strlen($esc_type = $link->real_escape_str(filter_var($type, FILTER_SANITIZE_STRING))) <= 0) {
-            $result = false;
-            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $this->dbc->errors());                        
-        }
-        if(strlen($filtered_password = filter_var($password, FILTER_SANITIZE_STRING)) <= db_connection::$MIN_PASSWORD_LENGTH) {
-            $result = false;
-            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, "Password does not meet minimum requirements");                                    
-        }
-        if($result) {
-            $hash = password_hash($filtered_password, PASSWORD_DEFAULT);
+        $esc_name = $link->real_escape_string(filter_var($name, FILTER_SANITIZE_STRING));
+        $esc_email = $link->real_escape_string(filter_var($email,FILTER_SANITIZE_STRING));
+        $esc_type = $link->real_escape_string(filter_var($type, FILTER_SANITIZE_STRING));
+        $flt_password = filter_var($password, FILTER_SANITIZE_STRING);
+        if(strlen($esc_name) <= 0 or strlen($esc_email) <=0 or ($esc_type != 'diner' and $esc_type != 'restaurant') or strlen($flt_password) <= 0) {
+            $this->errlog->log_error(__FILE__,__FUNCTION__,__LINE__,"Could not add user because of one or more invalid inputs. Make sure all inputs are not blank.");
+            return false;
+        } else {
+            $hash = password_hash($flt_password, PASSWORD_DEFAULT);
             $stmt = $link->prepare("INSERT INTO user VALUES(NULL,TRUE, NOW(), NOW(), ?, ?, ?, ?)");
             $stmt->bind_param('ssss', $esc_type, $esc_name, $esc_email, $hash);
-            if(!$result = $stmt->execute()) {
-                $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $link->error);
-            }
+            return $stmt->execute();
         }
-        return $result;
     }
     public function errors() {
-        return $this->errlog->errors();
+        return $this->errlog->flush_errors();
     }
 }
 
