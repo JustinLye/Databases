@@ -40,6 +40,7 @@
 			} else {
 				$_SESSION['grub_user'] = $user_info;
 				if($user_info['user_type'] == 'restaurant') {
+                                        setcookie('user_id', $user_info['user_id']);
 					header('Location: restaurant_homepage.php');
 				} else {
 					echo "<p>diner</p>";
