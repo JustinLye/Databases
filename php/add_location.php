@@ -16,7 +16,13 @@
 		$street = $link->real_escape_string(filter_var($_POST['street'], FILTER_SANITIZE_STRING));
 		$zip = $link->real_escape_string(filter_var($_POST['zip'], FILTER_SANITIZE_STRING));
 		$phone = $link->real_escape_string(filter_var($_POST['phone'], FILTER_SANITIZE_STRING));
-                
+                $rest_id = $link->real_escape_string(filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_STRING));
+                $stmt = $link->prepare("INSERT INTO location VALUES(
+                    NULL, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param('isssssss',$rest_id,
+                        $name, $country, $state, $city, $street_addr, $zip, $phone);
+                setcookie('add log result',$stmt->execute());
+                header('Location: ../html/add_location.html');
 	?>
 </body>
 </html>
