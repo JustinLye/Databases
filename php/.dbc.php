@@ -41,6 +41,7 @@ class error_keeper {
 class db_connection {
 	private $CONFIG_FILE = "/home/jlye/.dbconfig/.grub.config.ini"; //full path to configuration file
 	private $DEFAULT_TIMEOUT = 5; //default connection timeout period
+        public static $MIN_PASSWORD_LENGTH = 6;
 	private $config; //array of configuration settings
 	private $errlog; //simple object to log errors (for debugging)
 	private $_dblink; //mysqli object

@@ -44,16 +44,16 @@ class q1 {
                         <table>
                             <tr>
                                 <td>User Name:</td>
-                                <td><input type=\"text\" name=\"user_name\" size=\"32\" placeholder=\"Enter User Name...\" /></td>
+                                <td><input type=\"text\" name=\"name\" size=\"32\" placeholder=\"Enter User Name...\" /></td>
                             </tr>
                             <tr>
                                 <td>Email:</td>
-                                <td><input type=\"email\" name=\"user_email\" size=\"128\" placeholder=\"Enter Email Address...\" /></td>
+                                <td><input type=\"email\" name=\"email\" size=\"128\" placeholder=\"Enter Email Address...\" /></td>
                             </tr>
                             <tr>
                                 <td>User Type:</td>
                                 <td>
-                                    <select name=\"user_type\">
+                                    <select name=\"type\">
                                         <option value=\"diner\">Diner</option>
                                         <option value=\"restaurant\">Restaurant</option>
                                     </select>
@@ -61,7 +61,7 @@ class q1 {
                             </tr>
                             <tr>
                                 <td>Password:</td>
-                                <td><input type=\"password\" name=\"pass_word\" placeholder=\"Enter a password...\" /></td>
+                                <td><input type=\"password\" name=\"password\" placeholder=\"Enter a password...\" /></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -71,16 +71,117 @@ class q1 {
                     </form>
                 </div>
                 <p>Table before adding new user.<p>";
+    public static $PartA_AfterSuccessfulInsertString = "<h3>Query that involves one table. (1.a)</h3>
+                <p style=\"color: red;\">Add user failed</p>
+                <p>Fill out the form and click the submit button to add a user to the table</p>
+                <div class=\"usr-form\">
+                    <form action=\"q1.php\" method=\"post\" id=\"add_user_form\">
+                        <table>
+                            <tr>
+                                <td>User Name:</td>
+                                <td><input type=\"text\" name=\"name\" size=\"32\" placeholder=\"Enter User Name...\" /></td>
+                            </tr>
+                            <tr>
+                                <td>Email:</td>
+                                <td><input type=\"email\" name=\"email\" size=\"128\" placeholder=\"Enter Email Address...\" /></td>
+                            </tr>
+                            <tr>
+                                <td>User Type:</td>
+                                <td>
+                                    <select name=\"type\">
+                                        <option value=\"diner\">Diner</option>
+                                        <option value=\"restaurant\">Restaurant</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Password:</td>
+                                <td><input type=\"password\" name=\"password\" placeholder=\"Enter a password...\" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type=\"submit\" name=\"submit\" value=\"Add User\" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <p>Table before adding new user.<p>";
+    public static $PartA_AfterFailedInsertString = "<h3>Query that involves one table. (1.a)</h3>
+                <p style=\"color: green;\">New user successfully added</p>
+                <p>Fill out the form and click the submit button to add a user to the table</p>
+                <div class=\"usr-form\">
+                    <form action=\"q1.php\" method=\"post\" id=\"add_user_form\">
+                        <table>
+                            <tr>
+                                <td>User Name:</td>
+                                <td><input type=\"text\" name=\"name\" size=\"32\" placeholder=\"Enter User Name...\" /></td>
+                            </tr>
+                            <tr>
+                                <td>Email:</td>
+                                <td><input type=\"email\" name=\"email\" size=\"128\" placeholder=\"Enter Email Address...\" /></td>
+                            </tr>
+                            <tr>
+                                <td>User Type:</td>
+                                <td>
+                                    <select name=\"type\">
+                                        <option value=\"diner\">Diner</option>
+                                        <option value=\"restaurant\">Restaurant</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Password:</td>
+                                <td><input type=\"password\" name=\"password\" placeholder=\"Enter a password...\" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type=\"submit\" name=\"submit\" value=\"Add User\" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <p>Table <strong>after<strong> adding new user.<p>";
     private $dbc;
+    private $errlog;
     public function __construct() {
         $this->dbc = new db_connection;
+        $this->errlog = new error_keeper();
     }
     
     public function get_user_table() {
         return $this->dbc->dblink()->query("SELECT * FROM active_user_v");
-    }    
+    }
+    public function add_user($name, $email, $password, $type) {
+        $result = true;
+        $link = $this->dbc->dblink();
+        if(strlen($esc_name = $link->real_escape_str(filter_var($name,FILTER_SANITIZE_STRING))) <= 0) {
+            $result = false;
+            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $this->dbc->errors());
+        }
+        if(strlen($esc_email = $link->real_escape_str(filter_var($email, FILTER_SANITIZE_STRING))) <= 0) {
+            $result = false;
+            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $this->dbc->errors());            
+        }
+        if(strlen($esc_type = $link->real_escape_str(filter_var($type, FILTER_SANITIZE_STRING))) <= 0) {
+            $result = false;
+            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $this->dbc->errors());                        
+        }
+        if(strlen($filtered_password = filter_var($password, FILTER_SANITIZE_STRING)) <= db_connection::$MIN_PASSWORD_LENGTH) {
+            $result = false;
+            $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, "Password does not meet minimum requirements");                                    
+        }
+        if($result) {
+            $hash = password_hash($filtered_password, PASSWORD_DEFAULT);
+            $stmt = $link->prepare("INSERT INTO user VALUES(NULL,TRUE, NOW(), NOW(), ?, ?, ?, ?)");
+            $stmt->bind_param('ssss', $esc_type, $esc_name, $esc_email, $hash);
+            if(!$result = $stmt->execute()) {
+                $this->errlog->log_error(__FILE__, __FUNCTION__, __LINE__, $link->error);
+            }
+        }
+        return $result;
+    }
     public function errors() {
-        return $this->dbc->errors();
+        return $this->errlog->errors();
     }
 }
 

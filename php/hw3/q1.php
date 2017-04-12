@@ -36,6 +36,14 @@
                 }
                 util::to_html_table(util::active_user_v_headings(), $functs->get_user_table());
 		break;
+            case "POST":
+                if(!$functs->add_user($_POST['name'], $_POST['email'], $_POST['password'], $_POST['type'])) {
+                    echo "<p>Errors have occurred.</p>";
+                    echo $functs->errors();
+                    echo "<span class=\"info_msg\">" . q1::$PartA_AfterFailedInsertString . "</span>";
+                } else {
+                    echo "<span class=\"info_msg\">" . q1::$PartA_SuccessfulInsertString . "</span>";
+                }
         }
 
     ?>
