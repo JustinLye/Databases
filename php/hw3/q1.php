@@ -42,7 +42,9 @@
                     echo $functs->errors();
                     echo "<span class=\"info_msg\">" . q1::$PartA_AfterFailedInsertString . "</span>";
                 } else {
+                    echo "temp";
                     echo "<span class=\"info_msg\">" . q1::$PartA_SuccessfulInsertString . "</span>";
+                    
                 }
         }
 
