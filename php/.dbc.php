@@ -47,7 +47,7 @@ class db_connection {
 	private $_dblink; //mysqli object
 	private $config_loaded = false; //indicates configuration file has already been parsed and saved in $config
 	public function __construct() {
-		$errlog = new error_keeper;
+		$this->errlog = new error_keeper;
 		$this->_dblink = mysqli_init(); //initialize mysqli object
 		$this->_dblink->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->DEFAULT_TIMEOUT); //set timeout
 	}
