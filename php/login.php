@@ -5,7 +5,6 @@
 	<link rel="stylesheet" href="../css/default.css">
 </head>
 <body>
-	<?php session_start() ?>
 	<ul class="nav-bar">
 		<li><a href="../index.html">Home</a></li>
 	</ul>
@@ -38,24 +37,23 @@
 				echo '<p>User not valid.</p>';
 				header('Location: login.php');
 			} else {
-				$_SESSION['grub_user'] = $user_info;
+                                setcookie('user_id', $user_info['user_id']);
+                                setcookie('user_type', $user_info['user_type']);
+                                setcookie('logged_out', "", time()-1);
 				if($user_info['user_type'] == 'restaurant') {
-                                        setcookie('user_id', $user_info['user_id']);
 					header('Location: restaurant_homepage.php');
 				} else {
 					echo "<p>diner</p>";
 				}
 			}
-		} else {
-			if(isset($_SESSION['logged_in']) and isset($_SESSION['grub_user'])) {
-				if($_SESSION['logged_in']) {
-					if($_SESSION['grub_user']['user_type'] == 'restaurant') {
-						header('Location: restaurant_homepage.php');
-					} else {
-						echo "<p>diner</p>";
-					}
-				}
-			}
+		} elseif(filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING) == 'GET') {
+                    $utype = filter_input(INPUT_COOKIE, 'user_type', FILTER_SANITIZE_STRING);
+                    if($utype == 'restaurant') {
+                        header('Location: restaurant_homepage.php');
+                    } else {
+
+
+                    }
 		}
 		/*$user_id = $db->login($username, $password);
 		if(!$user_id) {

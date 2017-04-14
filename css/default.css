@@ -115,6 +115,9 @@ ul.nav-bar li.dropdown:hover span.dropdown-content {
 	width: 100%;
 	border: 1px solid #020202;
 }
+
+
+
 .tbl_data th, td {
 	border: none;
 	text-align: left;

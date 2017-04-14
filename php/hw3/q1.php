@@ -22,35 +22,30 @@
             <span class="dropdown-content">
                 <a href="q1.php">Part 3 Q1</a>
                 <a href="q2.php">Part 3 Q2</a>
+                <a href="q6.php">Part 3 Q6</a>
             </span>
         </li>
     </ul>
     <?php
         require_once('hw3funcs.php');
-        $functs = new q1;
-        $srvr_method = filter_var($_SERVER['REQUEST_METHOD'], FILTER_SANITIZE_STRING);
+        $srvr_method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
         switch ($srvr_method) {
             case "GET":
                 echo "<span class=\"info_msg\">" . q1::$PartA_InputFormString . "</span>";
-                if(!$user_view = $functs->get_user_table()) {
-                    echo $functs->errors();
-                }
-                util::to_html_table(util::active_user_v_headings(), $functs->get_user_table());
+                echo util::to_html_table(util::active_user_v_headings(), get_user_table());
 		break;
             case "POST":
-                $subid = filter_var($_POST['submit'], FILTER_SANITIZE_STRING);
-                switch ($subid) {
-                    case "Add User":
-                        if(!$functs->add_user($_POST['name'], $_POST['email'], $_POST['password'], $_POST['type'])) {
-                            echo "<p>Errors have occurred.</p>";
-                            echo $functs->errors();
-                            echo "<span class=\"info_msg\">" . q1::$PartA_AfterFailedInsertString . "</span>";
-                        } else {
-                            echo "<span class=\"info_msg\">" . q1::$PartA_AfterSuccessfulInsertString . "</span>";
-                        }
-                        util::to_html_table(util::active_user_v_headings(), $functs->get_user_table());
-                        break;
+                if(!add_user(
+                        filter_input(INPUT_POST,'name',FILTER_SANITIZE_STRING),
+                        filter_input(INPUT_POST, 'email' , FILTER_SANITIZE_STRING),
+                        filter_input(INPUT_POST,'password', FILTER_SANITIZE_STRING),
+                        filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING))) {
+                    echo "<p>Errors have occurred. " . msg::$last_error . "</p>";
+                    echo "<span class=\"info_msg\">" . q1::$PartA_AfterFailedInsertString . "</span>";
+                } else {
+                    echo "<span class=\"info_msg\">" . q1::$PartA_AfterSuccessfulInsertString . "</span>";
                 }
+                echo util::to_html_table(util::active_user_v_headings(), get_user_table());
                 break;
         }
     ?>

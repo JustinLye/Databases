@@ -9,10 +9,10 @@
 		<li><a href="../index.html">Home</a></li>
 	</ul>
 	<?php
-            require_once('/home/jlye/.php/.dbc.php');
-            require_once('output_functs.php');
-            $db = new db_connection;
-            echo util::to_html_table(util::active_user_v_headings(), $db->dblink()->query("SELECT * FROM active_user_v"));
+            require_once('dbtools.php');
+            echo get_id(49, USER_TO_REST);
+            echo get_id(8, REST_TO_USER);
+            
             
             
 	?>

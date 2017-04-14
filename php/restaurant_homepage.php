@@ -1,27 +1,31 @@
+<?php
+    if(filter_input(INPUT_COOKIE,'logged_out', FILTER_SANITIZE_NUMBER_INT) == 1) {
+        header('Location: logout.php');
+        exit();
+    }
+?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Restaurant Homepage</title>
+	<title>Restaurant</title>
 	<link rel="stylesheet" href="../css/default.css">
 </head>
 <body>
-	<?php
-		require_once('/home/jlye/.php/.dbc.php');
-                $db = new db_connection;
-                $link = $db->dblink();
-                if(isset($_COOKIE['user_id'])) {
-                    $user_id = $link->real_escape_string(filter_input(INPUT_COOKIE, 'user_id', FILTER_SANITIZE_STRING));
-                    $stmt = $link->prepare("SELECT restaurant_id FROM restaurant WHERE user_id = ?");
-                    $stmt->bind_param('s',$user_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    setcookie('rest_id', $result->fetch_array(MYSQLI_ASSOC)['restaurant_id']);
-                }
-	?>
 	<ul class="nav-bar">
 		<li><a href="logout.php">Logout</a></li>
-		<li><a href="../html/add_location.html">Add Location</a></li>
-	</ul>
-	
+		<li><a href="add_location.php">Add Location</a></li>
+	</ul>    
+	<?php
+            $chk_id = filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_NUMBER_INT);
+            require_once('display_locs.php');
+            require_once('dbtools.php');
+            if(!chk_id) {
+                setcookie('rest_id', get_id(filter_input(INPUT_COOKIE, 'user_id', FILTER_SANITIZE_NUMBER_INT), USER_TO_REST));
+            }
+            echo "<h2>Restaurants</h2>";
+            echo restaurants_table();
+            echo "<h2>Locations</h2>";
+            echo locations_table();
+	?>
 </body>
 </html>
