@@ -6,7 +6,7 @@
 </head>
 <body>
     <script src="../js/dbtools.js"></script>
-    <script>
+    <script type="text/javascript">
         function restaurantList() {
             restaurantSelectList(
                 function (res) { document.getElementById("rest_list").outerHTML = "<select onchange=\"locationList()\" name=\"rest_list\" id=\"rest_list\">" + res.responseText + "</select>"; }
@@ -22,18 +22,27 @@
                 );
         }
         function submitNewEntree() {
-            var name = document.getElementById("entree_name").innerText;
-            var desc = document.getElementById("desc").innerText;
+            var name = document.getElementById("entree_name").value;
+            var desc = document.getElementById("desc").value;
             var price = document.getElementById("price").value;
-            var addr = document.getElementById("loc_list").value;
+            var id = document.getElementById("loc_list").value;
+			addEntree(submissionResponse, name, desc, price, id);
         }
+		function submissionResponse(res) {
+			if(res.responseText == "1") {
+				document.getElementById("msg").innerText = "Hooray! You have a new item on the menu.";
+			} else {
+				document.getElementById("msg").innerText = "Sorry, but the entree was not added to the menu due to inadequate programming.";
+			}
+				
+		}
     </script>
     <ul class="nav-bar">
         <li><a href="../php/restaurant_homepage.php">Home</a></li>
         <li><a href="../php/add_location.php">Add Location</a></li>
     </ul>
     <div class="usr-form">
-        <form action="../php/add_entree.php" method="post" id="add_entree_form">
+        <form action="javascript:submitNewEntree()" method="post" id="add_entree_form">
             <table>
                 <tr>
                     <td>Restaurant</td>
@@ -70,6 +79,7 @@
             </table>
         </form>
     </div>
+	<p id="msg"></p>
     <script>
         setRestId(); //sets rest_id cookie to the restaurant_id associated with user_id
         restaurantList(); //loads selection list with available restaurants

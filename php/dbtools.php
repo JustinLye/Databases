@@ -310,7 +310,7 @@ function get_location_select_list_options($rest_id, $rest_name) {
     $name = $link->real_escape_string(filter_var($rest_name, FILTER_SANITIZE_STRING));
     
     //prepare and execute sql statement
-    $stmt = $link->prepare("SELECT CONCAT(street_addr, ' ', city, ', ', subdivision_code, ' ', zip) FROM location WHERE restaurant_id = ? AND name = ?");
+    $stmt = $link->prepare("SELECT location_id, CONCAT(street_addr, ' ', city, ', ', subdivision_code, ' ', zip) FROM location WHERE restaurant_id = ? AND name = ?");
     $stmt->bind_param('is',$id, $name);
     $stmt->execute();
     $qresult = $stmt->get_result();
@@ -321,7 +321,7 @@ function get_location_select_list_options($rest_id, $rest_name) {
     $options = "";
     
     while($row = $qresult->fetch_array(MYSQLI_NUM)) {
-        $options .= $s0 . $row[0] . $s1 . $row[0] . $s2;
+        $options .= $s0 . $row[0] . $s1 . $row[1] . $s2;
     }
     return $options;    
 }
