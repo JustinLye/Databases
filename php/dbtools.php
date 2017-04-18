@@ -326,6 +326,11 @@ function get_location_select_list_options($rest_id, $rest_name) {
     return $options;    
 }
 
+function set_rest_id_cookie() {
+    $id = get_id(filter_input(INPUT_COOKIE, 'user_id', FILTER_SANITIZE_NUMBER_INT), USER_TO_REST);
+    return setcookie('rest_id', $id);    
+}
+
 //Returns an array of location addresses for a give restaurant id and name
 function get_location_array($rest_id, $rest_name) {
    $db = new db_connection; //init database connection obj.
