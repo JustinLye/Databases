@@ -14,7 +14,10 @@
             switch($mode) {
                 case "GET":
                     if(!filter_input(INPUT_COOKIE, 'logged_out', FILTER_SANITIZE_NUMBER_INT) == 1) {
-                    echo add_location_form();
+                        echo add_location_form();
+                        if(filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_NUMBER_INT) == NULL) {
+                            set_rest_id_cookie();
+                        }
                     } else {
                         header('Location: ../index.html');
                     }
