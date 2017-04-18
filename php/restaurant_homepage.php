@@ -13,8 +13,19 @@
 <body>
 	<ul class="nav-bar">
 		<li><a href="logout.php">Logout</a></li>
-		<li><a href="add_location.php">Add Location</a></li>
-                <li><a href="../html/add_entree.html">Add Entree</a></li>
+                <li class="dropdown">Locations
+                    <span class="dropdown-content">
+                        <a href="add_location.php">New Location</a>
+                        <a href="#">Edit Location</a>
+                    </span>
+                    </li>
+		<li class="dropdown">Entrees
+                    <span class="dropdown-content">
+                        <a href="../html/add_entree.html">New Entree</a>
+                        <a href="#">Edit Entree</a>
+                    </span>
+                </li>
+                
 	</ul>    
 	<?php
             $chk_id = filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_NUMBER_INT);
