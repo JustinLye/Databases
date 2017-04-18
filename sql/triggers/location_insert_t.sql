@@ -1,0 +1,7 @@
+CREATE TRIGGER location_insert_t BEFORE INSERT ON location
+FOR EACH ROW
+BEGIN
+	IF CHAR_LENGTH(NEW.name) <= 0 OR CHAR_LENGTH(NEW.city) <= 0 OR CHAR_LENGTH(NEW.street_addr) <= 0 OR CHAR_LENGTH(NEW.zip) <= 0 OR CHAR_LENGTH(NEW.phone) <> 10 THEN
+		SET NEW.name = NULL;
+	END IF;
+END;

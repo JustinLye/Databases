@@ -86,14 +86,15 @@ ul.nav-bar li.dropdown:hover span.dropdown-content {
 
 
 
-.usr-form input[type=text], input[type=password], input[type=email] {
+.usr-form input[type=text], input[type=password], input[type=email], input[type=tel], input[type=number] {
     width: 350px;
     height: 35px;
     font-family: 'Droid Sans', sans-serif;
     font-size: 12pt;
     padding: 5px;
 }
-.usr-form select option {
+
+.usr-form option {
     width: 330px;
     height: 35px;
     font-family: 'Droid Sans', sans-serif;
@@ -116,7 +117,15 @@ ul.nav-bar li.dropdown:hover span.dropdown-content {
 	border: 1px solid #020202;
 }
 
-
+.info_msg p {
+	font-family: 'Droid Sans', sans-serif;
+	font-size: 16pt;
+	color: teal;
+}
+.info_msg h3 {
+	font-family: 'Droid Sans', sans-serif;
+	font-size: 28pt;
+}
 
 .tbl_data th, td {
 	border: none;

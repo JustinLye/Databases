@@ -1,0 +1,5 @@
+CREATE TRIGGER remove_diner_t AFTER DELETE ON diner
+FOR EACH ROW
+BEGIN
+	DELETE FROM user WHERE OLD.user_id = user_id;
+END;

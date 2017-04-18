@@ -9,48 +9,12 @@
 		<li><a href="restaurant_homepage.php">Go Back</a></li>
 	</ul>
 	<?php
+            require_once('dbtools.php');
             $mode = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
             switch($mode) {
                 case "GET":
                     if(!filter_input(INPUT_COOKIE, 'logged_out', FILTER_SANITIZE_NUMBER_INT) == 1) {
-                    echo     	"<div class=\"usr-form\">
-		<form action=\"add_location.php\" method=\"post\" id=\"add_location_form\">
-			<table>
-				<tr>
-					<td>Name</td>
-					<td><input type=\"text\" name=\"name\" placeholder=\"Enter location name...\" /></td>
-				</tr>
-				<tr>
-					<td>Country</td>
-					<td><input type=\"text\" name=\"country\" placeholder=\"Enter Country...\" /></td>
-				</tr>
-				<tr>
-					<td>State</td>
-					<td><input type=\"text\" name=\"state\" placeholder=\"Enter State...\" /></td>
-				</tr>
-				<tr>
-					<td>City</td>
-					<td><input type=\"text\" name=\"city\" placeholder=\"Enter City...\" /></td>
-				</tr>
-				<tr>
-					<td>Street</td>
-					<td><input type=\"text\" name=\"street\" placeholder=\"Enter Street...\" /></td>
-				</tr>
-				<tr>
-					<td>Zip</td>
-					<td><input type=\"text\" name=\"zip\" placeholder=\"Enter Zip Code...\" /></td>
-				</tr>
-				<tr>
-					<td>Phone</td>
-					<td><input type=\"text\" name=\"phone\" placeholder=\"Enter Phone Number...\" /></td>
-				</tr>
-				<tr>
-					<td></td>
-					<td><input type=\"submit\" name=\"submit\" value=\"Add Location\" /></td>
-				</tr>
-			</table>
-                    </div>
-                    ";
+                    echo add_location_form();
                     } else {
                         header('Location: ../index.html');
                     }
@@ -59,7 +23,7 @@
                 case "POST":
 //                    setcookie('add_loc_result',0);
                     echo "<p>" . __LINE__ . "</p>";
-	require_once('/home/jlye/.php/.dbc.php');
+                
                 $db = new db_connection();
 		$link = $db->dblink();
 		$name = $link->real_escape_string(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));

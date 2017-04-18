@@ -14,6 +14,7 @@
 	<ul class="nav-bar">
 		<li><a href="logout.php">Logout</a></li>
 		<li><a href="add_location.php">Add Location</a></li>
+                <li><a href="../html/add_entree.html">Add Entree</a></li>
 	</ul>    
 	<?php
             $chk_id = filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_NUMBER_INT);

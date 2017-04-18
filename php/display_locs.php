@@ -23,7 +23,7 @@
         }
         $db = new db_connection();
         $link = $db->dblink();
-        $stmt = $link->prepare("SELECT loc.name AS \"Restaurant Name\", CONCAT(loc.street_addr, ' ', loc.city, ', ', loc.state, ' ', loc.zip) AS \"Address\", loc.phone AS \"Phone\" from location AS loc, restaurant AS rest WHERE loc.restaurant_id = rest.restaurant_id AND rest.user_id = ? ORDER BY name, country, state, city, zip");
+        $stmt = $link->prepare("SELECT loc.name AS \"Restaurant Name\", CONCAT(loc.street_addr, ' ', loc.city, ', ', loc.subdivision_code, ' ', loc.zip) AS \"Address\", loc.phone AS \"Phone\" from location AS loc, restaurant AS rest WHERE loc.restaurant_id = rest.restaurant_id AND rest.user_id = ? ORDER BY name, country_code, subdivision_code, city, zip");
         $stmt->bind_param('i',$user_id);
         $stmt->execute();
         return util::to_html_table_chg_width(array('Restaurant Name', 'Address', 'Phone'), $stmt->get_result(), "35.0%");        

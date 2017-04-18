@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Testing</title>
+	<link rel="stylesheet" href="../css/default.css">
+</head>
+<body>
+	<script src="../js/dbtools.js"></script>
+	<div id="user_types"></div>
+	<div id="rest_list"></div>
+	<div id="loc_list"></div>
+	<script>
+        setRestId();
+        restaurantSelectList(
+			function(res) {
+			    document.getElementById("rest_list").outerHTML = "<select name=\"rest_list\" id=\"rest_list\">" + res.responseText + "</select>";
+			}
+        );
+	</script>
+	
+</body>
+</html>
