@@ -39,8 +39,7 @@ switch(filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING)) {
     case "GET":
         switch(filter_input(INPUT_GET, 'task', FILTER_SANITIZE_NUMBER_INT)) {
             case GETID_USER_TO_REST:
-                $id = get_id(filter_input(INPUT_COOKIE, 'user_id', FILTER_SANITIZE_NUMBER_INT), USER_TO_REST);
-                echo setcookie('rest_id', $id);
+                set_rest_id_cookie();
                 break;
             case SELOPT_RESTAURANT_USE_COOKIE:
                 //output restaurant select list options for given restaurant id stored in cookie 'rest_id'
