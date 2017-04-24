@@ -7,7 +7,6 @@ CREATE TABLE ticket(
 	delivery_type ENUM('delivery','carryout') NOT NULL, /* every order is either delivery or carry out */
 	creation_date DATETIME NOT NULL, /* date the diner created the order */
 	requested_date DATETIME NOT NULL, /* date and time by which the diner would like to take delivery of the order */
-	status ENUM('pending','accepted','completed', 'rejected') NOT NULL DEFAULT 'pending', /* every instance of a ticket will trigger creation of a pending_ticket. the location must accept or reject pending_tickets. The only valid update to status is from pending to accepted | rejected. */
 	CONSTRAINT FOREIGN KEY(diner_id) REFERENCES diner(diner_id),
 	CONSTRAINT FOREIGN KEY(location_id) REFERENCES location(location_id));
 

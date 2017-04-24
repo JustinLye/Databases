@@ -28,16 +28,20 @@
                 
 	</ul>    
 	<?php
-            $chk_id = filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_NUMBER_INT);
+			
             require_once('display_locs.php');
             require_once('dbtools.php');
-            if(!chk_id) {
-                setcookie('rest_id', get_id(filter_input(INPUT_COOKIE, 'user_id', FILTER_SANITIZE_NUMBER_INT), USER_TO_REST));
-            }
+            //If the rest_id cookie is not set, then set the cookie and get the restaurant_id using the user_id cookie
+            if(($id = filter_input(INPUT_COOKIE, 'rest_id', FILTER_SANITIZE_NUMBER_INT)) === NULL) {
+                set_rest_id_cookie();
+                $id = get_id(filter_input(INPUT_COOKIE, 'user_id', FILTER_SANITIZE_NUMBER_INT), USER_TO_REST);
+            }            
             echo "<h2>Restaurants</h2>";
             echo restaurants_table();
             echo "<h2>Locations</h2>";
             echo locations_table();
+            echo "<h2>Menu</h2>";
+            echo util::to_html_table_chg_width(array('Location', 'Entree', 'Description', 'Price'), get_menu_all_locs($id), "50%");
 	?>
 </body>
 </html>

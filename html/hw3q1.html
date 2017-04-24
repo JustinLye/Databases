@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id="qtitle">Q1.A</title>
+    <link rel="stylesheet" href="../css/default.css" />
+    <script src="../js/dbtools.js"></script> <!-- this includes functions that use XMLHttp to send requests to the server and/or communicate with the MySQL database -->
+</head>
+<body>
+    <div id="loadingContent">
+        <p>Loading...</p>
+    </div>
+    <div id="allContent" hidden>
+        <select id="questSelectList" onchange="javascript: docElements.questionPrep();">
+            <option value="Q1A">Question 1.A</option>
+            <option value="Q1B">Question 1.B</option>
+        </select>
+        <h3 id="qheading" class="info_msg">Question 1: Part a</h3> <!-- heading for question 1.a-->
+        <p id="msg0" class="info_msg">Below are current users in the system. Please create a user account of type restaurant.</p> <!--original prompt to user.-->
+        <div id="form0" class="usr-form">
+            <!--form used to capture sign-up info from the user-->
+            <form action="javascript:signUpNewUser()" method="post" id="add_user_form">
+                <table id="formFields">
+                    <tr>
+                        <td>User Name:</td>
+                        <td><input type="text" id="name" name="name" size="32" required placeholder="Enter User Name..." /></td> <!--this will be inserted to user.user_name in MySQl database-->
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td><input type="email" id="email" name="email" size="128" required placeholder="Enter Email Address..." /></td> <!--this will be inserted to user.email in MySQL database-->
+                    </tr>
+                    <tr>
+                        <td>User Type:</td>
+                        <td><select id="userTypes"></select></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" id="password" name="password" required placeholder="Enter a password..." /></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" name="submit" value="Sign Up" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <br /><br />
+        <div id="table0"></div>
+        <div id="userTable" hidden></div><div id="userSummaryTable" hidden></div>
+    </div>
+    <script>
+        var docElements = new function () {
+            this.loadingContent = document.getElementById('loadingContent');
+            this.allcontent = document.getElementById('allContent'); //div element that encloses all page elements
+            this.pageTitle = document.getElementById('qtitle'); //title of page
+            this.questHeading = document.getElementById('qheading'); //H3 element used to communicate which question is currently displayed
+            this.msg = document.getElementById('msg0'); //p element used to prompt the user
+            this.questForm = document.getElementById('form0'); //div element that represents a user form
+            this.userTable = document.getElementById('userTable'); //span element that can be used to display a user table
+            this.userSummaryTable = document.getElementById('userSummaryTable'); //span element that can be used to display a user summary table
+            this.typeList = document.getElementById('userTypes');
+            this.questSelect = document.getElementById('questSelectList');
+            this.previousQuestion = "Q1.A";
+            this.init = function () {
+                this.questSelect.selectedIndex = 0;
+                
+                this.setupQ1A();
+            }
+            this.questionPrep = function () {
+                switch (this.questSelect.value) {
+                    case 'Q1A':
+                        this.questionCleanUp();
+                        this.previousQuestion = 'Q1A';
+                        this.setupQ1A();
+                        break;
+                    case 'Q1B':
+                        this.questionCleanUp();
+                        this.previousQuestion = 'Q1B';
+                        this.setupQ1B();
+                        break;
+
+                }
+
+            }
+            this.questionCleanUp = function () {
+                switch (this.previousQuestion) {
+                    case 'Q1A':
+                        this.cleanUpQ1A();
+                        break;
+                    case 'Q1B':
+                        this.cleanUpQ1B();
+                        break;
+                }
+            }
+            this.hideAllContent = function (makeHidden) {
+                if (makeHidden === 'undefined') {
+                    makeHidden = !(this.allcontent.hasAttribute('hidden'));
+                }
+                if (makeHidden) {
+                    this.allcontent.setAttribute('hidden', 'true');
+                    if (this.loadingContent.hasAttribute('hidden')) {
+                        this.loadingContent.removeAttribute('hidden');
+                    }
+                } else {
+                    this.allcontent.removeAttribute('hidden');
+                    if (!this.loadingContent.hasAttribute('hidden')) {
+                        this.loadingContent.setAttribute('hidden', 'true');
+                    }
+                }
+            }
+            this.hideUserForm = function (makeHidden) {
+                if (makeHidden === 'undefined') {
+                    makeHidden = !(this.questForm.hasAttribute('hidden'));
+                }
+                if (makeHidden) {
+                    if (!this.questForm.hasAttribute('hidden', 'true')) {
+                        this.questForm.setAttribute('hidden', 'true');
+                    }
+                } else {
+                    this.questForm.removeAttribute('hidden');
+                }
+            }
+            this.changeTitle = function (str) {
+                this.pageTitle.innerHTML = str;
+            }
+            this.changePrompt = function (str) {
+                this.msg.innerHTML = str;
+            }
+            this.changeHeading = function (str) {
+                this.questHeading.innerHTML = str;
+            }
+            this.hideUserTable = function (makeHidden) {
+                if (makeHidden === 'undefined') {
+                    makeHidden = !(this.userTable.hasAttribute('hidden'));
+                }
+                if (makeHidden) {
+                    document.getElementById('userTable').style.visibility = 'hidden';
+                } else {
+                    this.userTable.removeAttribute('hidden');
+                }
+            }
+            this.hideUserSummaryTable = function (makeHidden) {
+                if (makeHidden === 'undefined') {
+                    makeHidden = !(this.userSummaryTable.hasAttribute('hidden'));
+                }
+                if (makeHidden) {
+                    this.userSummaryTable.setAttribute('hidden', 'true');
+                } else {
+                    this.userSummaryTable.removeAttribute('hidden');
+                }
+            }
+            //userTable() get a current user table from the MySQL databse
+            this.loadUserTable = function () {
+                getUserTable(
+                    function (res) {
+                        this.userTable.outerHTML = "<div id=\"userTable\">" + res.responseText + "</div>";
+                    },
+                    false);
+            }
+            //userTypeList() replaces the element with id userTypes with a selection list of valid user types
+            this.loadUserTypeList = function () {
+                userTypesSelectList(
+                    function (res) {
+                        this.userTypes.outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
+                    });
+            }
+            this.loadUserSummaryTable = function () {
+                
+                getUserSummaryTable(
+                    function (res) {
+                        document.getElementById('userSummaryTable').outerHTML = "<div id=\"userSummaryTable\">" + res.responseText + "</div>";
+                        this.userSummaryTable = document.getElementById('userSummaryTable');
+                    },
+                    false);
+            }
+
+            this.setupQ1A = function () {
+                this.hideAllContent(true);
+                this.changeTitle('Q1A');
+                this.changeHeading('Question 1: Part a');
+                this.changePrompt('Below are current users in the system. Please create a user account of type restaurant.')
+                this.loadUserTypeList();
+                this.loadUserTable();
+                this.hideUserForm(false);
+                this.hideUserTable(false);
+                this.hideAllContent(false);
+            }
+            this.setupQ1B = function () {
+                this.hideAllContent(true);
+                this.changeTitle('Q1.B');
+                this.changePrompt("Below is a summary of the user table shown in part a. The table is grouped by user type and the two aggregate functions are COUNT(user_name) and MAX(reg_date).");
+                this.questHeading.innerHTML = "Question 1: Part b"; 
+                this.loadUserSummaryTable();
+                this.hideAllContent(false);
+            }
+
+            this.cleanUpQ1A = function () {
+                this.hideAllContent(true);
+                this.hideUserForm(true);
+                this.hideUserTable(true);
+                this.hideAllContent(false);
+            }
+            this.cleanUpQ1B = function () {
+                this.hideAllContent(true);
+                this.hideUserSummaryTable(true);
+                this.hideAllContent(false);
+            }
+
+        }
+        //signUpNewUser() attempts to insert new user into MySQL user table
+        function signUpNewUser() {
+            //get all form values from the document
+            var name = document.getElementById('name').value;
+            var type = document.getElementById('userTypes').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password');
+            //call signUp function
+            signUp(handleSignUp, name, email, type, password);
+        }
+        //handleSignUp() takes an XMLHttpResponse object as an argument. If the resonseText is blank then this is an indication the user signup was successful.
+        function handleSignUp(res) {
+            if (res.responseText == "") { //in this case user sign up succeeded
+                docElements.hideAllContent(true);
+                docElements.hideUserTable(true);
+                docElements.loadUserTable(); //call function to update the user table.
+                docElements.changePrompt("Hooray! You're newly created account should be visible in the table below."); //display success and next steps message
+                docElements.hideUserForm(true);
+                docElements.hideUserTable(false);
+                login(function () { }, document.getElementById('name').value, document.getElementById('password'), false); //login, sets some cookies that are needed later.
+                docElements.loadUserTable();
+                docElements.hideAllContent(false);
+            } else {
+                docElements.changePrompt("Oh boy looks like we encountered the following problems" + res.responseText);
+            }
+        }
+        docElements.init();
+    </script>
+</body>
+</html>

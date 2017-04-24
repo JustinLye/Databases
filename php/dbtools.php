@@ -48,7 +48,7 @@ function get_id($id, $lookup_type) {
 //Returns view of active users
 function get_user_table() {
     $db = new db_connection;
-    return $db->dblink()->query("SELECT * FROM active_user_v");
+    return $db->dblink()->query("SELECT * FROM active_user_v ORDER BY user_id DESC");
 }
 //Returns diner table
 function get_diner_table() {
@@ -92,7 +92,7 @@ function get_us_state_select_options() {
     if(!$q = $link->query("SELECT subdivision_code, description FROM geolocations WHERE country_code = 'US';")) { //query database for united states ISO state codes
         echo "<p>Geolocation query failed</p>";
         return "";
-    }
+    }   
     while($row = $q->fetch_array(MYSQLI_NUM)) { //loop through query result appending each row as an html select list option.
         $options .= $s0 . $row[0] . $s1 . $row[1] . $s2;
     }
@@ -333,11 +333,11 @@ function set_rest_id_cookie() {
 
 //Returns an array of location addresses for a give restaurant id and name
 function get_location_array($rest_id, $rest_name) {
-   $db = new db_connection; //init database connection obj.
+    $db = new db_connection; //init database connection obj.
     $link = $db->dblink(); //get copy of connected mysqli object.
     
     //filter and escape input
-    $id = $link->real_escape_string(filter_var($rest_id, FILTER_SANITIZE_STRING));    
+    $id = $link->real_escape_string(filter_var($rest_id, FILTER_SANITIZE_NUMBER_INT));    
     $name = $link->real_escape_string(filter_var($rest_name, FILTER_SANITIZE_STRING));
     
     //prepare and execute sql statement
@@ -349,4 +349,49 @@ function get_location_array($rest_id, $rest_name) {
     return $qresult->fetch_all(MYSQLI_ASSOC);
 }
 
+function get_menu_all_locs($rest_id) {
+    $db = new db_connection; //init database connection obj.
+    $link = $db->dblink(); //get copy of connected mysqli object.
+    
+    //filter and escape input
+    $id = $link->real_escape_string(filter_var($rest_id, FILTER_SANITIZE_NUMBER_INT));
+	
+	//prepare and execute sql statement
+	$stmt = $link->prepare("SELECT b.name as locname, a.name, a.description, a.price FROM entree AS a, location AS b WHERE a.location_id = b.location_id AND b.restaurant_id = ?");
+	$stmt->bind_param('i',$id);
+	$stmt->execute();
+	return $stmt->get_result();
+}
+function get_user_info($username, $password) {
+    $u = filter_var($username, FILTER_SANITIZE_STRING);
+    $p = filter_var($password, FILTER_SANITIZE_STRING);
+    if(!valid_user_login_credentials($u, $p)) {
+        echo "Invalid user credentials. ";
+        return FALSE;
+    } else {
+        $db = new db_connection;
+        $link = $db->dblink();
+        
+        //escape input
+        $uesc = $link->real_escape_string($u);
+        
+        //prepare and execute sql statement
+        $stmt = $link->prepare("SELECT * FROM active_user_v WHERE user_name = ?");
+        $stmt->bind_param('s',$uesc);
+        if(!$stmt->execute()) {
+            return FALSE;
+        } else {
+            $result = $stmt->get_result();
+            return $result->fetch_array(MYSQLI_ASSOC);
+        }
+    }
+}
+
+function get_user_summary_table() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    
+    $sql_str = "SELECT user_type AS Type, COUNT(user_name), MAX(reg_date) FROM user GROUP BY user_type";
+    return $link->query($sql_str);
+}
 ?>
