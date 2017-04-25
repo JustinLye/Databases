@@ -125,3 +125,122 @@ function getUserSummaryTable(callBackFunct, async) {
     x.send();
 
 }
+
+function getEntreeTable(callBackFunct, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("GET", "../php/getEntreeTable.php", async);
+	x.send();
+}
+
+function getLocationTable(callBackFunct, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("GET", "../php/getLocationTable.php", async);
+	x.send();
+}
+function getLocEntreeSummaryTable(callBackFunct, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("GET", "../php/locEntreeSummaryTable.php", async);
+	x.send();
+}
+
+function getTableDescription(callBackFunct, tableName, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("POST", "../php/describeTable.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("table_name=" + tableName);
+}
+
+function getRestaurantMinLocationTable(callBackFunct, minval) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	x.open("GET", "../php/getRestaurantMinLocationTable.php?minval="+minval);
+	x.send();
+}
+
+function getRestIDList_HasLocs(callBackFunct) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	x.open("GET", "../php/getRestIDList_HasLocs.php",false);
+	x.send();
+}
+
+function getLocIDList_RestIDOnly(callBackFunct, restID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("POST", "../php/getLocIDList_RestIDOnly.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("restID="+restID);
+}
+
+function createEntreeView(callBackFunct, locID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("POST", "../php/createEntreeView.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("locID=" + locID);
+}
+
+function getTables(callBackFunct) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	x.open("GET", "../php/getTables.php");
+	x.send();
+}

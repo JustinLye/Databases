@@ -3,49 +3,37 @@
 <head>
     <title id="qtitle">Q1.A</title>
     <link rel="stylesheet" href="../css/default.css" />
+    <style>
+        p, h3 {
+            font-family: 'Droid Sans', sans-serif;
+        }
+        select {
+            font-family:'Droid Sans',sans-serif; font-weight: bold; color: lightslategray; padding: .25em;
+        }
+    </style>
     <script src="../js/dbtools.js"></script> <!-- this includes functions that use XMLHttp to send requests to the server and/or communicate with the MySQL database -->
 </head>
-<body>
+<body onload="javascript: if (document.getElementById('questSelectList') !== null) { docElements.questionPrep(); } else { console.log('questSelectList not found.'); }; document.body.scrollTop = document.documentElement.scrollTop = 0;">
     <div id="loadingContent">
         <p>Loading...</p>
     </div>
     <div id="allContent" hidden>
-        <select id="questSelectList" onchange="javascript: docElements.questionPrep();">
-            <option value="Q1A">Question 1.A</option>
-            <option value="Q1B">Question 1.B</option>
-        </select>
         <h3 id="qheading" class="info_msg">Question 1: Part a</h3> <!-- heading for question 1.a-->
+        <span style="color: cadetblue; font-family:'Droid Sans',sans-serif;">
+            Go To a Different Question:    <select id="questSelectList" onchange="javascript: docElements.questionPrep();">
+                <option value="Q1A">Question 1.A</option>
+                <option value="Q1B">Question 1.B</option>
+                <option value="Q1C">Question 1.C</option>
+                <option value="Q1D">Question 1.D</option>
+                <option value="Q1E">Question 1.E</option>
+                <option value="Q2">Question 2</option>
+            </select>
+        </span>
+
         <p id="msg0" class="info_msg">Below are current users in the system. Please create a user account of type restaurant.</p> <!--original prompt to user.-->
-        <div id="form0" class="usr-form">
-            <!--form used to capture sign-up info from the user-->
-            <form action="javascript:signUpNewUser()" method="post" id="add_user_form">
-                <table id="formFields">
-                    <tr>
-                        <td>User Name:</td>
-                        <td><input type="text" id="name" name="name" size="32" required placeholder="Enter User Name..." /></td> <!--this will be inserted to user.user_name in MySQl database-->
-                    </tr>
-                    <tr>
-                        <td>Email:</td>
-                        <td><input type="email" id="email" name="email" size="128" required placeholder="Enter Email Address..." /></td> <!--this will be inserted to user.email in MySQL database-->
-                    </tr>
-                    <tr>
-                        <td>User Type:</td>
-                        <td><select id="userTypes"></select></td>
-                    </tr>
-                    <tr>
-                        <td>Password:</td>
-                        <td><input type="password" id="password" name="password" required placeholder="Enter a password..." /></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><input type="submit" name="submit" value="Sign Up" /></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
+        <div id="form0" class="usr-form"></div>
         <br /><br />
         <div id="table0"></div>
-        <div id="userTable" hidden></div><div id="userSummaryTable" hidden></div>
     </div>
     <script>
         var docElements = new function () {
@@ -55,15 +43,12 @@
             this.questHeading = document.getElementById('qheading'); //H3 element used to communicate which question is currently displayed
             this.msg = document.getElementById('msg0'); //p element used to prompt the user
             this.questForm = document.getElementById('form0'); //div element that represents a user form
-            this.userTable = document.getElementById('userTable'); //span element that can be used to display a user table
-            this.userSummaryTable = document.getElementById('userSummaryTable'); //span element that can be used to display a user summary table
-            this.typeList = document.getElementById('userTypes');
             this.questSelect = document.getElementById('questSelectList');
-            this.previousQuestion = "Q1.A";
+            this.previousQuestion = "Q1A";
             this.init = function () {
-                this.questSelect.selectedIndex = 0;
-                
-                this.setupQ1A();
+                //this.questSelect.selectedIndex = 0;
+                //window.scrollTo(0, 0);
+                //this.setupQ1A();
             }
             this.questionPrep = function () {
                 switch (this.questSelect.value) {
@@ -77,9 +62,26 @@
                         this.previousQuestion = 'Q1B';
                         this.setupQ1B();
                         break;
-
+                    case 'Q1C':
+                        this.questionCleanUp();
+                        this.previousQuestion = 'Q1C';
+                        this.setupQ1C();
+                        break;
+                    case 'Q1D':
+                        this.questionCleanUp();
+                        this.previousQuestion = 'Q1D';
+                        this.setupQ1D();
+                        break;
+                    case 'Q1E':
+                        this.questionCleanUp();
+                        this.previousQuestion = 'Q1E';
+                        this.setupQ1E();
+                        break;
+                    case 'Q2':
+                        this.questionCleanUp();
+                        this.previousQuestion = 'Q2';
+                        this.setupQ2();
                 }
-
             }
             this.questionCleanUp = function () {
                 switch (this.previousQuestion) {
@@ -128,49 +130,196 @@
             this.changeHeading = function (str) {
                 this.questHeading.innerHTML = str;
             }
-            this.hideUserTable = function (makeHidden) {
-                if (makeHidden === 'undefined') {
-                    makeHidden = !(this.userTable.hasAttribute('hidden'));
-                }
-                if (makeHidden) {
-                    document.getElementById('userTable').style.visibility = 'hidden';
-                } else {
-                    this.userTable.removeAttribute('hidden');
+            this.clearTables = function () {
+                var tableElement = document.getElementById('table0');
+                if (tableElement.hasChildNodes) {
+                    while (tableElement.firstChild) {
+                        tableElement.removeChild(tableElement.firstChild);
+                    }
                 }
             }
-            this.hideUserSummaryTable = function (makeHidden) {
-                if (makeHidden === 'undefined') {
-                    makeHidden = !(this.userSummaryTable.hasAttribute('hidden'));
-                }
-                if (makeHidden) {
-                    this.userSummaryTable.setAttribute('hidden', 'true');
-                } else {
-                    this.userSummaryTable.removeAttribute('hidden');
+            this.clearForms = function () {
+                var formElement = document.getElementById('form0');
+                if (formElement.hasChildNodes) {
+                    while (formElement.firstChild) {
+                        formElement.removeChild(formElement.firstChild);
+                    }
                 }
             }
-            //userTable() get a current user table from the MySQL databse
-            this.loadUserTable = function () {
-                getUserTable(
-                    function (res) {
-                        this.userTable.outerHTML = "<div id=\"userTable\">" + res.responseText + "</div>";
-                    },
-                    false);
-            }
-            //userTypeList() replaces the element with id userTypes with a selection list of valid user types
-            this.loadUserTypeList = function () {
+            this.insertSignUpForm = function () {
+                var formElement = document.getElementById('form0');
+                var signUpForm = document.createElement('form');
+                signUpForm.setAttribute('id', 'signUpForm');
+                formElement.appendChild(signUpForm);
+                document.getElementById('signUpForm').outerHTML = "            <form action=\"javascript:signUpNewUser()\" method=\"post\" id=\"add_user_form\">" +
+        "<table id=\"formFields\">" +
+                    "<tr>" +
+                        "<td>User Name:</td>" +
+                        "<td><input type=\"text\" id=\"name\" name=\"name\" size=\"32\" required placeholder=\"Enter User Name...\" /></td> <!--this will be inserted to user.user_name in MySQl database-->" +
+                    "</tr>" +
+                    "<tr>" +
+                    "    <td>Email:</td> " +
+                    "    <td><input type=\"email\" id=\"email\" name=\"email\" size=\"128\" required placeholder=\"Enter Email Address...\" /></td> <!--this will be inserted to user.email in MySQL database--> " +
+                    "</tr> " +
+                    "<tr> " +
+                    "    <td>User Type:</td> " +
+                    "    <td><select id=\"userTypes\"></select></td> " +
+                    "</tr> " +
+                    "<tr> " +
+                    "    <td>Password:</td> " +
+                    "    <td><input type=\"password\" id=\"password\" name=\"password\" required placeholder=\"Enter a password...\" /></td> " +
+                    "</tr> " +
+                    "<tr> " +
+                    "    <td></td> " +
+                    "    <td><input type=\"submit\" name=\"submit\" value=\"Sign Up\" /></td> " +
+                    "</tr> " +
+                "</table> " +
+            "</form>";
                 userTypesSelectList(
-                    function (res) {
-                        this.userTypes.outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
-                    });
+                function (res) {
+                    document.getElementById('userTypes').outerHTML = this.userTypes.outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
+                });
             }
-            this.loadUserSummaryTable = function () {
-                
-                getUserSummaryTable(
+            this.insertLocationCountForm = function () {
+                var formElement = document.getElementById('form0');
+                formElement.appendChild(document.createElement('form'));
+                formElement.lastChild.setAttribute('id', 'locationCountForm');
+                document.getElementById('locationCountForm').outerHTML = "<form action=\"javascript:docElements.insertRestaurantsWithMinLocations()\" method=\"post\" id=\"locationCountForm\"><table id=\"locCountFormFields\"><tr><td>Min. Location Count:</td><td><input type=\"number\" onchange=\"javascript:docElements.insertRestaurantsWithMinLocations()\" id=\"locMinCount\" name=\"locMinCount\" size=\"4\" min=\"0\" max=\"99\" value=\"0\" /></td></tr></table></form>";
+            }
+            this.insertRestaurantSelectForm = function () {
+                getRestIDList_HasLocs(
                     function (res) {
-                        document.getElementById('userSummaryTable').outerHTML = "<div id=\"userSummaryTable\">" + res.responseText + "</div>";
-                        this.userSummaryTable = document.getElementById('userSummaryTable');
-                    },
-                    false);
+                        document.getElementById('form0').appendChild(document.createElement('select'));
+                        document.getElementById('form0').lastChild.setAttribute('id', 'restSelectList');
+                        document.getElementById('restSelectList').outerHTML = "<table id=\"restSelectListTable\"><tr><td>Select a restaurant ID:</td><td><select onchange=\"javascript:docElements.insertLocationSelectForm();\"style=\"max-width:20%;\" id=\"restSelectList\">" + res.responseText + "</select></td></tr></table>";
+                        document.getElementById('form0').appendChild(document.createElement('select'));
+                        document.getElementById('form0').lastChild.setAttribute('id', 'locSelectList');
+                        document.getElementById('form0').appendChild(document.createElement('input'));
+                        document.getElementById('form0').lastChild.setAttribute('id', 'selectSubmitButton');
+                        document.getElementById('selectSubmitButton').outerHTML = "<table id=\"selectSubmitButtonTable\"><tr><td></td><td><input type=\"button\" name=\"selectSubmitButton\" id=\"selectSubmitButton\" value=\"Create View\" onclick=\"javascript:docElements.handleCreateViewClick();\"/>";
+                    });
+
+            }
+            this.insertShowTables = function () {
+                getTables(
+                function (res) {
+                    document.getElementById('form0').appendChild(document.createElement('div'));
+                    document.getElementById('form0').lastChild.setAttribute('id', 'showDBTables');
+                    document.getElementById('showDBTables').outerHTML = "<div id=\"showDBTables\">" + res.responseText + "</div>";
+                });
+            }
+            this.insertLocationSelectForm = function () {
+                getLocIDList_RestIDOnly(
+                function (res) {
+                    document.getElementById('locSelectList').outerHTML = "<table id=\"locSelectList\"><tr><td>Select a location ID:</td><td><select style=\"max-width:20%\" id=\"locSelectListEntry\">" + res.responseText + "</select></td></tr></table>";
+                },
+                document.getElementById('restSelectList').value,
+                false);
+            }
+            this.hideTables = function (makeHidden) {
+                if (makeHidden === 'undefined') {
+                    makeHidden = true;
+                }
+                var tableElement = document.getElementById('table0');
+                if (makeHidden) {
+                    tableElement.setAttribute('hidden', 'true');
+                } else if (tableElement.hasAttribute('hidden')) {
+                        tableElement.removeAttribute('hidden');
+                    }
+            }
+            this.insertUserTable = function () {
+                getUserTable(
+                function (res) {
+                    var tableElement = document.getElementById('table0');
+                    var userTableElement = document.createElement('div');
+                    userTableElement.setAttribute('id', 'userTable');
+                    tableElement.appendChild(userTableElement);
+                    document.getElementById('userTable').outerHTML = "<div id=\"userTable\">" + res.responseText + "</div>";
+                },
+                false);
+            }
+            this.insertUserSummaryTable = function () {
+                getUserSummaryTable(
+                        function (res) {
+                            var tableElement = document.getElementById('table0');
+                            var userSummaryTableElement = document.createElement('div');
+                            userSummaryTableElement.setAttribute('id', 'userSummaryTable');
+                            tableElement.appendChild(userSummaryTableElement);
+                            document.getElementById('userSummaryTable').outerHTML = "<div id=\"userSummaryTable\">" + res.responseText + "</div>";
+                        },
+                        false);
+            }
+            this.insertEntreeTable = function () {
+                getEntreeTable(
+                function (res) {
+                    var tableElement = document.getElementById('table0');
+                    var entreeTableElement = document.createElement('div');
+                    entreeTableElement.setAttribute('id', 'entreeTable');
+                    tableElement.appendChild(entreeTableElement);
+                    document.getElementById('entreeTable').outerHTML = "<div id=\"entreeTable\">" + res.responseText + "</div>";
+                },
+                false);
+            }
+            this.insertLocationTable = function () {
+                getLocationTable(
+                        function (res) {
+                            var tableElement = document.getElementById('table0');
+                            var locTableElement = document.createElement('div');
+                            locTableElement.setAttribute('id', 'locTable');
+                            tableElement.appendChild(locTableElement);
+                            document.getElementById('locTable').outerHTML = "<div id=\"locTable\">" + res.responseText + "</div>";
+                        },
+                        false);
+            }
+            this.insertLocEntreeSummaryTable = function () {
+                getLocEntreeSummaryTable(
+                        function (res) {
+                            var tableElement = document.getElementById('table0');
+                            var locEntreeTableElement = document.createElement('div');
+                            locEntreeTableElement.setAttribute('id', 'locEntreeSummaryTable');
+                            tableElement.appendChild(locEntreeTableElement);
+                            document.getElementById('locEntreeSummaryTable').outerHTML = "<div id=\"locEntreeSummaryTable\">" + res.responseText + "</div>";
+                        },
+                        false);
+            }
+            this.insertTableDescription = function (tableName) {
+                getTableDescription(function (res) {
+                    var tableElement = document.getElementById('table0');
+                    var tblDescElement = document.createElement('div');
+                    var eleid = tableName + "tableDesc";
+                    tblDescElement.setAttribute('id', eleid);
+                    tableElement.appendChild(tblDescElement);
+                    document.getElementById(eleid).outerHTML = "<div id\"" + eleid + "\">" + res.responseText + "</div>";
+                },
+                tableName,
+                false);
+            }
+            this.insertRestaurantsWithMinLocations = function () {
+                this.clearTables();
+                getRestaurantMinLocationTable(
+                        function (res) {
+                            var tableElement = document.getElementById('table0');
+                            tableElement.appendChild(document.createElement('div'));
+                            tableElement.lastChild.outerHTML = "<div id\"minLocTable\">" + res.responseText + "</div>";
+                        },
+                        document.getElementById('locMinCount').value);
+            }
+            this.createUserGeneratedEntreeView = function() {
+                createEntreeView(
+                function (res) {
+                    document.getElementById('table0').appendChild(document.createElement('div'));
+                    document.getElementById('table0').lastChild.setAttribute('id', 'usrGenView');
+                    document.getElementById('usrGenView').outerHTML = "<div id=\"usrGenView\">" + res.responseText + "</div>";
+                },
+                document.getElementById('locSelectListEntry').value,
+                false);
+            }
+            this.handleCreateViewClick = function() {
+                this.hideTables(true);
+                this.clearTables(true);
+                this.insertShowTables();
+                this.createUserGeneratedEntreeView();
+                this.hideTables(false);
             }
 
             this.setupQ1A = function () {
@@ -178,30 +327,109 @@
                 this.changeTitle('Q1A');
                 this.changeHeading('Question 1: Part a');
                 this.changePrompt('Below are current users in the system. Please create a user account of type restaurant.')
-                this.loadUserTypeList();
-                this.loadUserTable();
+                this.clearForms();
+                this.insertSignUpForm();
+                this.clearTables();
+                this.insertUserTable();
+                this.hideTables(false);
                 this.hideUserForm(false);
-                this.hideUserTable(false);
                 this.hideAllContent(false);
             }
             this.setupQ1B = function () {
                 this.hideAllContent(true);
                 this.changeTitle('Q1.B');
                 this.changePrompt("Below is a summary of the user table shown in part a. The table is grouped by user type and the two aggregate functions are COUNT(user_name) and MAX(reg_date).");
-                this.questHeading.innerHTML = "Question 1: Part b"; 
-                this.loadUserSummaryTable();
+                this.questHeading.innerHTML = "Question 1: Part b";
+                this.clearForms();
+                this.clearTables();
+                this.insertUserSummaryTable();
+                this.hideAllContent(false);
+            }
+            this.setupQ1C = function () {
+                this.hideAllContent(true);
+                this.changeTitle('Q1.C');
+                this.changePrompt("Below three tables. The first is the location table, which contains all locations that have been created by restaurant users. The second table is the entree table, which contains all entrees at various locations. The third table is a query the displays the name of each location, the total number of entrees offered at the location and the average price of entrees at the location. Finally, descriptions of the entree and location tables are listed below.");
+                this.changeHeading("Question 1: Part c");
+                this.clearForms();
+                this.clearTables();
+                var tableElement = document.getElementById('table0');
+                tableElement.appendChild(document.createElement('h3'));
+                tableElement.lastChild.innerText = "Location Table";
+                this.insertLocationTable();
+                tableElement.appendChild(document.createElement('br'));
+                tableElement.appendChild(document.createElement('h3'));
+                tableElement.lastChild.innerText = "Entree Table";
+                this.insertEntreeTable();
+                tableElement.appendChild(document.createElement('br'));
+                tableElement.appendChild(document.createElement('h3'));
+                tableElement.lastChild.innerText = "Location Entree Summary";
+                this.insertLocEntreeSummaryTable();
+                tableElement.appendChild(document.createElement('br'));
+                tableElement.appendChild(document.createElement('h3'));
+                tableElement.lastChild.innerText = "location table description";
+                this.insertTableDescription('location');
+                tableElement.appendChild(document.createElement('br'));
+                tableElement.appendChild(document.createElement('h3'));
+                tableElement.lastChild.innerText = "entree table description";
+                this.insertTableDescription('entree');
+                this.hideTables(false);
+                this.hideUserForm(true);
+                this.hideAllContent(false);
+            }
+            this.setupQ1D = function () {
+                this.hideAllContent(true);
+                this.changeTitle('Q1.D');
+                this.changeHeading('Question 1: Part d');
+                this.changePrompt('The table below shows all restaurant users that have created locations greater than or equal to the value indicated in the number input box. Adjust the number input up and down to see changes in the query result');
+                this.clearForms();
+                this.clearTables();
+                this.insertLocationCountForm();
+                this.insertRestaurantsWithMinLocations();
+                this.hideUserForm(false);
+                this.hideTables(false);
+                this.hideAllContent(false);
+            }
+            this.setupQ1E = function () {
+                this.hideAllContent(true);
+                this.changeTitle('Q1.E');
+                this.changeHeading('Question 1: Part e');
+                this.changePrompt('The table below is the same table from Q1.D. Left outer joins are used to get the user_name from the user table and the location count from the location table. The SQL Statement is: \"SELECT USR.user_name, COUNT(LOC.location_id) FROM restaurant AS REST LEFT OUTER JOIN user as USR ON REST.user_id = USR.user_id LEFT OUTER JOIN location AS LOC ON LOC.restaurant_id = REST.restaurant_id GROUP BY REST.restaurant_id HAVING COUNT(LOC.location_id) >= 1 ORDER BY COUNT(LOC.location_id) DESC\"');
+                this.clearForms();
+                this.insertLocationCountForm();
+                document.getElementById('locMinCount').value = 1;
+                this.hideUserForm(true);
+                this.clearTables();
+                this.insertRestaurantsWithMinLocations();
+                this.hideTables(false);
+                this.hideAllContent(false);
+            }
+            this.setupQ2 = function () {
+                this.hideAllContent(true);
+                this.changeTitle('Q2');
+                this.changeHeading('Question 2: Part a - d');
+                this.changePrompt('Select a restaurant ID from the list. Then, select a location from the following list. Finally click the create view button. A view of the selected restaurants locations entrees will be displayed');
+                this.clearForms();
+                this.clearTables();
+                this.insertRestaurantSelectForm();
+                document.getElementById('form0').appendChild(document.createElement('br'));
+                document.getElementById('form0').appendChild(document.createElement('h3'));
+                document.getElementById('form0').lastChild.innerText = "Tables in Database:";
+                document.getElementById('form0').appendChild(document.createElement('br'));
+
+                this.insertLocationSelectForm();
+                this.insertShowTables();
+                this.hideTables(true);
+                this.hideUserForm(false);
                 this.hideAllContent(false);
             }
 
             this.cleanUpQ1A = function () {
                 this.hideAllContent(true);
                 this.hideUserForm(true);
-                this.hideUserTable(true);
                 this.hideAllContent(false);
             }
             this.cleanUpQ1B = function () {
                 this.hideAllContent(true);
-                this.hideUserSummaryTable(true);
                 this.hideAllContent(false);
             }
 
@@ -220,19 +448,26 @@
         function handleSignUp(res) {
             if (res.responseText == "") { //in this case user sign up succeeded
                 docElements.hideAllContent(true);
-                docElements.hideUserTable(true);
-                docElements.loadUserTable(); //call function to update the user table.
+                docElements.hideTables(true);
+                docElements.clearTables();
+                docElements.insertUserTable();
                 docElements.changePrompt("Hooray! You're newly created account should be visible in the table below."); //display success and next steps message
-                docElements.hideUserForm(true);
-                docElements.hideUserTable(false);
                 login(function () { }, document.getElementById('name').value, document.getElementById('password'), false); //login, sets some cookies that are needed later.
-                docElements.loadUserTable();
+                docElements.hideUserForm(true);
+                docElements.hideTables(false);
+                docElements.clearForms();
                 docElements.hideAllContent(false);
             } else {
                 docElements.changePrompt("Oh boy looks like we encountered the following problems" + res.responseText);
             }
         }
-        docElements.init();
+        function handleUnload() {
+            var currentSelection = document.getElementById('questSelectList')
+            if (currentSelection !== null) {
+                console.log(currentSelection.value);
+            }
+        }
+        //docElements.init();
     </script>
 </body>
 </html>

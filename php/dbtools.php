@@ -394,4 +394,86 @@ function get_user_summary_table() {
     $sql_str = "SELECT user_type AS Type, COUNT(user_name), MAX(reg_date) FROM user GROUP BY user_type";
     return $link->query($sql_str);
 }
-?>
+
+function get_entree_table() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    $sql_str = "SELECT * FROM entree";
+    return $link->query($sql_str);
+}
+function get_location_table() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    $sql_str = "SELECT * FROM location";
+    return $link->query($sql_str);    
+}
+
+function get_loc_entree_summary_table() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    $sql_str = "SELECT B.location_id, CONCAT(B.name,' - ', B.street_addr, ' ', B.city, ', ', B.subdivision_code, ' ', B.zip), COUNT(A.entree_id), AVG(A.price) FROM entree AS A, location AS B WHERE A.location_id = B.location_id GROUP BY B.location_id ORDER BY B.name";
+    return $link->query($sql_str);    
+}
+
+function get_table_description($table_name) {
+    $db = new db_connection;
+    $link = $db->dblink();
+    switch(filter_var($table_name, FILTER_SANITIZE_STRING)) {
+        case 'location':
+            return $link->query("DESCRIBE location");
+        case 'entree':
+            return $link->query("DESCRIBE entree");
+    }
+}
+function get_min_locs_table($minval) {
+
+    $v = filter_var($minval, FILTER_SANITIZE_STRING);
+    if($v < 0) {
+        echo "Minval cannot be less than 0.";
+    } elseif($v > 99) {
+        echo "Minval cannot be greater than 99.";
+    } else {
+        $db = new db_connection;
+        $link = $db->dblink();
+        $stmt = $link->prepare("SELECT USR.user_name, COUNT(LOC.location_id) FROM restaurant AS REST LEFT OUTER JOIN user as USR ON REST.user_id = USR.user_id LEFT OUTER JOIN location AS LOC ON LOC.restaurant_id = REST.restaurant_id GROUP BY REST.restaurant_id HAVING COUNT(LOC.location_id) >= ? ORDER BY COUNT(LOC.location_id) DESC");
+        $vesc = $link->real_escape_string($v);
+        $stmt->bind_param('i',$vesc);
+        $stmt->execute();
+        return $stmt->get_result();
+    }   
+}
+
+function get_restaurant_id_list_has_locations() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    return $link->query("SELECT REST.restaurant_id FROM restaurant AS REST WHERE REST.restaurant_id IN (SELECT LOC.restaurant_id FROM location AS LOC)");
+}
+
+function get_loc_id_list_rest_id_only($restID) {
+    $db = new db_connection;
+    $link = $db->dblink();
+    $rid = $link->real_escape_string(filter_var($restID, FILTER_SANITIZE_NUMBER_INT));
+    $stmt = $link->prepare("SELECT LOC.location_id FROM location AS LOC, restaurant AS REST WHERE LOC.restaurant_id = REST.restaurant_id AND LOC.restaurant_id = ?");
+    $stmt->bind_param('i',$rid);
+    $stmt->execute();
+    return $stmt->get_result();
+}
+
+function create_entree_view($locID) {
+    $db = new db_connection;
+    $link = $db->dblink();
+    $loc_id = $link->real_escape_string(filter_var($locID, FILTER_SANITIZE_NUMBER_INT));
+    $link->query("CREATE OR REPLACE VIEW user_generated_v AS SELECT * FROM entree WHERE location_id = " . $loc_id);
+    return $link->query("SELECT * FROM user_generated_v");
+}
+
+function showCreateViewSQL() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    return $link->query("SHOW CREATE TABLE user_generated_v");
+}
+function get_tables() {
+   $db = new db_connection;
+    $link = $db->dblink();
+    return $link->query("SHOW tables");    
+}

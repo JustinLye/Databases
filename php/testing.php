@@ -10,8 +10,11 @@
 	</ul>
 	<?php
             require_once('dbtools.php');
-            echo "<select name=\"restaurant_name\">" . get_restaurant_select_options(5) . "</select><";
-            echo "<select name=\"locations\">" .get_location_select_list_options(5, "Luigi's Bistro") . "</select>";
+            echo __LINE__;
+            $r = get_table_description('location');
+            echo __LINE__;
+            var_dump($r);
+            //var_dump($r);
             
             
             
