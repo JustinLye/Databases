@@ -6,7 +6,7 @@
     <script src="../js/dbtools.js"></script>
     <script src="../js/dispatchHandler.js"></script>
 </head>
-<body>
+<body onload="javascript: dispatcher.GeneratePage(document.getElementById('hw_questionSelect').value);">
     <div id="hw_loadingContent">
         <p>Loading...</p>
     </div>
@@ -17,6 +17,7 @@
                 Select a Question:
                 <select id="hw_questionSelect" onchange="javascript: dispatcher.GeneratePage(document.getElementById('hw_questionSelect').value);">
                     <option value="Q1A">Question 1: Part A</option>
+					<option value="Q1B">Question 1: Part B</option>
                 </select>
             </span>
         </div>
@@ -64,6 +65,32 @@
             document.getElementById('hw_heading').innerText = str;
         }
 		
+		//Appends user table to given element
+		function Insert_UserTable(elemID) {
+			if(document.getElementById(elemID) === null) {
+				console.log(elemID + " was not found.");
+			} else {
+				getUserTable(
+					function(res) {
+					document.getElementById(elemID).appendChild(document.createElement('div'));
+					document.getElementById(elemID).lastChild.outerHTML = res.responseText;
+					},
+					false);
+			}
+		}
+		//Appends user summary table to given element
+		function Insert_UserSummaryTable(elemID) {
+			if(document.getElementById(elemID) === null) {
+				console.log(elemID + " was not found.");
+			} else {
+				getUserSummaryTable(
+					function(res) {
+						document.getElementById(elemID).appendChild(document.createElement('div'));
+						document.getElementById(elemID).lastChild.outerHTML = res.responseText;
+					},
+					false);
+			}
+		}
         //Q1A Related functions
         function Q1A_GeneratePage() {
             Hide_AllContentNodes(true);
@@ -71,22 +98,12 @@
             Alter_Heading('The table below displays the current users already in the database. Please create a user account. After creating the account you should see it displayed in the user table.');
             //adds a div element and 2 child div elements that float left (form0) and right (table0)
             Q1A_AddContentBox();
-			Q1A_AddUserTable();
+			Clear_ByElementId('table0');
+			Insert_UserTable('table0');
             Q1A_AddSignUpForm();
             Hide_AllContentNodes(false);
         }
 
-		function Q1A_AddUserTable() {
-			Clear_ByElementId('table0');
-			getUserTable(
-				function (res) {
-					document.getElementById('table0').appendChild(document.createElement('div'));
-					document.getElementById('table0').lastChild.outerHTML = res.responseText;
-					document.getElementById('table0').lastElementChild.setAttribute('style', 'clear:both;float:right;margin-right:10%;');
-				},
-				false);
-		}
-		
         function Q1A_AddContentBox() {
             var doc = document.getElementById('hw_dynamicContent');
             var cbox = document.createElement('div');
@@ -167,15 +184,44 @@
             
             Hide_AllContentNodes(false);
         }
-
-
-
-        var dispatcher = new DispatchHandler();
+		
+		//Q1B functions
+		function Q1B_GeneratePage() {
+			Hide_AllContentNodes(true);
+			Alter_Title("Question 1: Part B");
+			Alter_Heading("The table on the left is the user table. The table on the right is a query of the user table grouped by user type with aggregate functions COUNT(user_id) and MAX(reg_date)");
+			Q1B_AddContentBox();
+            Insert_UserTable('table0');
+            //document.getElementsByClassName('usr-frm').firstChild.setAttribute('style', 'max-width: 50%;');
+            Insert_UserSummaryTable('table1');
+            document.getElementById('table1').getElementsByTagName('table')[0].setAttribute('style', 'width: 100%');
+			Hide_AllContentNodes(false);
+		}
+		function Q1B_AddContentBox() {
+            var doc = document.getElementById('hw_dynamicContent');
+            var cbox = document.createElement('div');
+            cbox.setAttribute('id', 'hw_Q1B_contentBox');
+            cbox.appendChild(document.createElement('div'));
+            cbox.lastChild.setAttribute('id', 'table0');
+            cbox.lastChild.setAttribute('style', 'float:left;max-width: 48%;');
+            cbox.appendChild(document.createElement('div'));
+            cbox.lastChild.setAttribute('id', 'table1');
+            cbox.lastChild.setAttribute('style', 'float:right;max-width: 48%;');
+            doc.appendChild(cbox);		
+		}
+		
+		function Q1B_CleanPage() {
+			Hide_AllContentNodes(true);
+			Clear_DynamicContentNodes();
+			Hide_AllContentNodes(false);
+		}
+		var dispatcher = new DispatchHandler();
         function Init() {
             dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Q1A_CleanPage);
-            dispatcher.GeneratePage("Q1A");
+			dispatcher.InsertPageHandler("Q1B", Q1B_GeneratePage, Q1B_CleanPage);
         }
-        Init();
+		Init();
+        
         
         
     </script>

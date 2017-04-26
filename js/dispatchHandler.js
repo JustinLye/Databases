@@ -15,12 +15,23 @@ function DispatchHandler() {
 		this.pageHandlers.push(p);
 	}
 	this.GeneratePage = function (optVal) {
-		for (let i = 0; i < this.pageHandlers.length; i++) {
-			if (this.pageHandlers[i].optionValue === optVal) {
+		if(optVal === "") {
+			if(this.pageHandlers.length > 0) {
 				this.CleanPage();
-				this.previousPage = optVal;
-				this.pageHandlers[i].generate();
+				this.previousPage = this.pageHandlers[0].optionValue;
+				this.pageHandlers[0].generate();
 				return true;
+			} else {
+				return false;
+			}
+		} else {
+			for (let i = 0; i < this.pageHandlers.length; i++) {
+				if (this.pageHandlers[i].optionValue === optVal) {
+					this.CleanPage();
+					this.previousPage = optVal;
+					this.pageHandlers[i].generate();
+					return true;
+				}
 			}
 		}
 		return false;
