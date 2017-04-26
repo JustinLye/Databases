@@ -31,6 +31,15 @@
                 doc.removeChild(doc.firstChild);
             }
         }
+		//Removes all child nodes of element with given id
+		function Clear_ByElementId(elemID) {
+			let e = document.getElementById(elemID);
+			if(e !== null) {
+				while(e.firstChild) {
+					e.removeChild(e.firstChild);
+				}
+			}
+		}
         //Hide "hw_allContent" div and show "hw_loadingContent" div
         function Hide_AllContentNodes(makeHidden) {
             let doc = document.getElementById('hw_allContent');
@@ -54,18 +63,7 @@
         function Alter_Heading(str) {
             document.getElementById('hw_heading').innerText = str;
         }
-
-        //Returns user table in the form of a table html element
-        function GetData_UserTable() {
-            var x = document.createElement('div');
-            getUserTable(
-                function (res) {
-                    var x = document.createElement('div');
-                    x.outerHTML = "<div id=\"userTable\">" + res.responseText + "</div>";
-                },
-                false);
-        }
-
+		
         //Q1A Related functions
         function Q1A_GeneratePage() {
             Hide_AllContentNodes(true);
@@ -73,17 +71,22 @@
             Alter_Heading('The table below displays the current users already in the database. Please create a user account. After creating the account you should see it displayed in the user table.');
             //adds a div element and 2 child div elements that float left (form0) and right (table0)
             Q1A_AddContentBox();
-            getUserTable(
-            function (res) {
-                document.getElementById('table0').appendChild(document.createElement('div'));
-                document.getElementById('table0').lastChild.outerHTML = res.responseText;
-                document.getElementById('table0').lastElementChild.setAttribute('style', 'clear:both;float:right;margin-right:10%;');
-            },
-            false);
+			Q1A_AddUserTable();
             Q1A_AddSignUpForm();
             Hide_AllContentNodes(false);
         }
 
+		function Q1A_AddUserTable() {
+			Clear_ByElementId('table0');
+			getUserTable(
+				function (res) {
+					document.getElementById('table0').appendChild(document.createElement('div'));
+					document.getElementById('table0').lastChild.outerHTML = res.responseText;
+					document.getElementById('table0').lastElementChild.setAttribute('style', 'clear:both;float:right;margin-right:10%;');
+				},
+				false);
+		}
+		
         function Q1A_AddContentBox() {
             var doc = document.getElementById('hw_dynamicContent');
             var cbox = document.createElement('div');
@@ -99,8 +102,9 @@
 
         function Q1A_AddSignUpForm() {
             var doc = document.getElementById('form0');
+			Clear_ByElementId('signUpForm');
             doc.appendChild(document.createElement('div'));
-            doc.lastChild.outerHTML = "<form action=\"javascript:signUpNewUser()\" method=\"post\" id=\"signUpForm\">" +
+            doc.lastChild.outerHTML = "<form action=\"javascript:Q1A_SignUpNewUser()\" method=\"post\" id=\"signUpForm\">" +
                     "<table id=\"formFields\">" +
                     "<tr>" +
                         "<td>User Name:</td>" +
@@ -129,10 +133,34 @@
                     document.getElementById('userTypes').outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
                 });
             doc.lastElementChild.setAttribute('class', 'usr-form');
-            doc.lastElementChild.setAttribute('style', 'clear:both;float:left;');
+            doc.lastElementChild.setAttribute('style', 'width:100%;clear:both;float:left;');
             
         }
-
+		//inserts new user to the user table
+		function Q1A_SignUpNewUser() {
+			let name = document.getElementById('name').value;
+			let email = document.getElementById('email').value;
+			let type = document.getElementById('userTypes').value;
+			let password = document.getElementById('password').value;
+			if(document.getElementById('msg0') === null) {
+				document.getElementById('signUpForm').appendChild(document.createElement('p'));
+				document.getElementById('signUpForm').lastElementChild.setAttribute('id','msg0');
+			}
+			signUp(
+				function(res) {
+					if(res.responseText === "") {
+						Q1A_AddUserTable();
+						document.getElementById('msg0').innerText = "You should see the new user account in the table to the right.";
+					} else {
+						document.getElementById('msg0').innerText = res.responseText;
+					}
+				},
+				name,
+				email,
+				type,
+				password,
+				false);
+		}
         function Q1A_CleanPage() {
             Hide_AllContentNodes(true);
             Clear_DynamicContentNodes();
