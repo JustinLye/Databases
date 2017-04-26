@@ -136,3 +136,15 @@ ul.nav-bar li.dropdown:hover span.dropdown-content {
 	background-color: #F2F2F2;
 }
 
+.hw p, h3 {
+    font-family: 'Droid Sans',sans-serif;
+}
+h3.hw {
+    font-weight: normal;
+    font-size: 22pt; 
+
+}
+.hw.quest_select {
+    color: cadetblue; 
+    font-family:'Droid Sans', sans-serif;
+}

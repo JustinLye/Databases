@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id="hw_title"></title>
+    <link rel="stylesheet" href="../css/default.css" />
+    <script src="../js/dbtools.js"></script>
+    <script src="../js/dispatchHandler.js"></script>
+</head>
+<body>
+    <div id="hw_loadingContent">
+        <p>Loading...</p>
+    </div>
+    <div id="hw_allContent">
+        <!--hw_fixedContent are elements that should exists on every page and do not change much-->
+        <div id="hw_fixedContent">
+            <span class="hw quest_select">
+                Select a Question:
+                <select id="hw_questionSelect" onchange="javascript: dispatcher.GeneratePage(document.getElementById('hw_questionSelect').value);">
+                    <option value="Q1A">Question 1: Part A</option>
+                </select>
+            </span>
+        </div>
+        <h3 class="hw" id="hw_heading"></h3>
+        <div id="hw_dynamicContent"></div>
+    </div>
+    <script>
+        //Removes all child nodes from the main content
+        function Clear_DynamicContentNodes() {
+            let doc = document.getElementById('hw_dynamicContent');
+            while (doc.firstChild) {
+                doc.removeChild(doc.firstChild);
+            }
+        }
+        //Hide "hw_allContent" div and show "hw_loadingContent" div
+        function Hide_AllContentNodes(makeHidden) {
+            let doc = document.getElementById('hw_allContent');
+            let ld = document.getElementById('hw_loadingContent');
+            if (makeHidden === undefined || !(makeHidden === false)) {
+                makeHidden = true;
+            }
+            if (makeHidden) {
+                doc.setAttribute('hidden', 'true');
+                ld.removeAttribute('hidden');
+            } else {
+                doc.removeAttribute('hidden');
+                ld.setAttribute('hidden', 'true');
+            }
+        }
+        //Changes title
+        function Alter_Title(str) {
+            document.getElementById('hw_title').innerText = str;
+        }
+        //Changes fixed page heading
+        function Alter_Heading(str) {
+            document.getElementById('hw_heading').innerText = str;
+        }
+
+        //Returns user table in the form of a table html element
+        function GetData_UserTable() {
+            var x = document.createElement('div');
+            getUserTable(
+                function (res) {
+                    var x = document.createElement('div');
+                    x.outerHTML = "<div id=\"userTable\">" + res.responseText + "</div>";
+                },
+                false);
+        }
+
+        //Q1A Related functions
+        function Q1A_GeneratePage() {
+            Hide_AllContentNodes(true);
+            Alter_Title('Question 1: Part A');
+            Alter_Heading('The table below displays the current users already in the database. Please create a user account. After creating the account you should see it displayed in the user table.');
+            //adds a div element and 2 child div elements that float left (form0) and right (table0)
+            Q1A_AddContentBox();
+            getUserTable(
+            function (res) {
+                document.getElementById('table0').appendChild(document.createElement('div'));
+                document.getElementById('table0').lastChild.outerHTML = res.responseText;
+                document.getElementById('table0').lastElementChild.setAttribute('style', 'clear:both;float:right;margin-right:10%;');
+            },
+            false);
+            Q1A_AddSignUpForm();
+            Hide_AllContentNodes(false);
+        }
+
+        function Q1A_AddContentBox() {
+            var doc = document.getElementById('hw_dynamicContent');
+            var cbox = document.createElement('div');
+            cbox.setAttribute('id', 'hw_Q1A_contentBox');
+            cbox.appendChild(document.createElement('div'));
+            cbox.lastChild.setAttribute('id', 'table0');
+            cbox.lastChild.setAttribute('style', 'float:right');
+            cbox.appendChild(document.createElement('div'));
+            cbox.lastChild.setAttribute('id', 'form0');
+            cbox.lastChild.setAttribute('style', 'float:left');
+            doc.appendChild(cbox);
+        }
+
+        function Q1A_AddSignUpForm() {
+            var doc = document.getElementById('form0');
+            doc.appendChild(document.createElement('div'));
+            doc.lastChild.outerHTML = "<form action=\"javascript:signUpNewUser()\" method=\"post\" id=\"signUpForm\">" +
+                    "<table id=\"formFields\">" +
+                    "<tr>" +
+                        "<td>User Name:</td>" +
+                        "<td><input type=\"text\" id=\"name\" name=\"name\" size=\"32\" required placeholder=\"Enter User Name...\" /></td> <!--this will be inserted to user.user_name in MySQl database-->" +
+                    "</tr>" +
+                    "<tr>" +
+                    "    <td>Email:</td> " +
+                    "    <td><input type=\"email\" id=\"email\" name=\"email\" size=\"128\" required placeholder=\"Enter Email Address...\" /></td> <!--this will be inserted to user.email in MySQL database--> " +
+                    "</tr> " +
+                    "<tr> " +
+                    "    <td>User Type:</td> " +
+                    "    <td><select id=\"userTypes\"></select></td> " +
+                    "</tr> " +
+                    "<tr> " +
+                    "    <td>Password:</td> " +
+                    "    <td><input type=\"password\" id=\"password\" name=\"password\" required placeholder=\"Enter a password...\" /></td> " +
+                    "</tr> " +
+                    "<tr> " +
+                    "    <td></td> " +
+                    "    <td><input type=\"submit\" name=\"submit\" value=\"Sign Up\" /></td> " +
+                    "</tr> " +
+                "</table> " +
+            "</form>";
+            userTypesSelectList(
+                function (res) {
+                    document.getElementById('userTypes').outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
+                });
+            doc.lastElementChild.setAttribute('class', 'usr-form');
+            doc.lastElementChild.setAttribute('style', 'clear:both;float:left;');
+            
+        }
+
+        function Q1A_CleanPage() {
+            Hide_AllContentNodes(true);
+            Clear_DynamicContentNodes();
+            
+            Hide_AllContentNodes(false);
+        }
+
+
+
+        var dispatcher = new DispatchHandler();
+        function Init() {
+            dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Q1A_CleanPage);
+            dispatcher.GeneratePage("Q1A");
+        }
+        Init();
+        
+        
+    </script>
+</body>
+</html>

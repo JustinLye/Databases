@@ -20,13 +20,13 @@
     <div id="allContent" hidden>
         <h3 id="qheading" class="info_msg">Question 1: Part a</h3> <!-- heading for question 1.a-->
         <span style="color: cadetblue; font-family:'Droid Sans',sans-serif;">
-            Go To a Different Question:    <select id="questSelectList" onchange="javascript: docElements.questionPrep();">
-                <option value="Q1A">Question 1.A</option>
-                <option value="Q1B">Question 1.B</option>
-                <option value="Q1C">Question 1.C</option>
-                <option value="Q1D">Question 1.D</option>
-                <option value="Q1E">Question 1.E</option>
-                <option value="Q2">Question 2</option>
+            Go To a Different Question:    <select id="questSelectList">
+                <option onclick="javascript: docElements.questionPrep('Q1A');" value="Q1A">Question 1.A</option>
+                <option onclick="javascript: docElements.questionPrep('Q1B');" value="Q1B">Question 1.B</option>
+                <option onclick="javascript: docElements.questionPrep('Q1C');" value="Q1C">Question 1.C</option>
+                <option onclick="javascript: docElements.questionPrep('Q1D');" value="Q1D">Question 1.D</option>
+                <option onclick="javascript: docElements.questionPrep('Q1E');" value="Q1E">Question 1.E</option>
+                <option onclick="javascript: docElements.questionPrep('Q2');" value="Q2">Question 2</option>
             </select>
         </span>
 
@@ -37,8 +37,6 @@
     </div>
     <script>
         var docElements = new function () {
-            this.loadingContent = document.getElementById('loadingContent');
-            this.allcontent = document.getElementById('allContent'); //div element that encloses all page elements
             this.pageTitle = document.getElementById('qtitle'); //title of page
             this.questHeading = document.getElementById('qheading'); //H3 element used to communicate which question is currently displayed
             this.msg = document.getElementById('msg0'); //p element used to prompt the user
@@ -50,8 +48,11 @@
                 //window.scrollTo(0, 0);
                 //this.setupQ1A();
             }
-            this.questionPrep = function () {
-                switch (this.questSelect.value) {
+            this.questionPrep = function (q) {
+                if (q === undefined) {
+                    q = document.getElementById('questSelectList').value;
+                }
+                switch (q) {
                     case 'Q1A':
                         this.questionCleanUp();
                         this.previousQuestion = 'Q1A';
@@ -91,34 +92,37 @@
                     case 'Q1B':
                         this.cleanUpQ1B();
                         break;
+                    case 'Q2':
+                        this.cleanUpQ2();
+                        break;
                 }
             }
             this.hideAllContent = function (makeHidden) {
                 if (makeHidden === 'undefined') {
-                    makeHidden = !(this.allcontent.hasAttribute('hidden'));
+                    makeHidden = !(document.getElementById('allContent').hasAttribute('hidden'));
                 }
                 if (makeHidden) {
-                    this.allcontent.setAttribute('hidden', 'true');
-                    if (this.loadingContent.hasAttribute('hidden')) {
-                        this.loadingContent.removeAttribute('hidden');
+                    document.getElementById('allContent').setAttribute('hidden', 'true');
+                    if (document.getElementById('loadingContent').hasAttribute('hidden')) {
+                        document.getElementById('loadingContent').removeAttribute('hidden');
                     }
                 } else {
-                    this.allcontent.removeAttribute('hidden');
-                    if (!this.loadingContent.hasAttribute('hidden')) {
-                        this.loadingContent.setAttribute('hidden', 'true');
+                    document.getElementById('allContent').removeAttribute('hidden');
+                    if (!document.getElementById('loadingContent').hasAttribute('hidden')) {
+                        document.getElementById('loadingContent').setAttribute('hidden', 'true');
                     }
                 }
             }
-            this.hideUserForm = function (makeHidden) {
+            this.hideForm = function (makeHidden) {
                 if (makeHidden === 'undefined') {
-                    makeHidden = !(this.questForm.hasAttribute('hidden'));
+                    makeHidden = !(document.getElementById('form0').hasAttribute('hidden'));
                 }
                 if (makeHidden) {
-                    if (!this.questForm.hasAttribute('hidden', 'true')) {
-                        this.questForm.setAttribute('hidden', 'true');
+                    if (!document.getElementById('form0').hasAttribute('hidden', 'true')) {
+                        document.getElementById('form0').setAttribute('hidden', 'true');
                     }
                 } else {
-                    this.questForm.removeAttribute('hidden');
+                    document.getElementById('form0').removeAttribute('hidden');
                 }
             }
             this.changeTitle = function (str) {
@@ -147,11 +151,8 @@
                 }
             }
             this.insertSignUpForm = function () {
-                var formElement = document.getElementById('form0');
-                var signUpForm = document.createElement('form');
-                signUpForm.setAttribute('id', 'signUpForm');
-                formElement.appendChild(signUpForm);
-                document.getElementById('signUpForm').outerHTML = "            <form action=\"javascript:signUpNewUser()\" method=\"post\" id=\"add_user_form\">" +
+                document.getElementById('form0').appendChild(document.createElement('form'));
+                document.getElementById('form0').lastChild.outerHTML = "            <form action=\"javascript:signUpNewUser()\" method=\"post\" id=\"signUpForm\">" +
         "<table id=\"formFields\">" +
                     "<tr>" +
                         "<td>User Name:</td>" +
@@ -177,7 +178,7 @@
             "</form>";
                 userTypesSelectList(
                 function (res) {
-                    document.getElementById('userTypes').outerHTML = this.userTypes.outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
+                    document.getElementById('userTypes').outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
                 });
             }
             this.insertLocationCountForm = function () {
@@ -332,7 +333,7 @@
                 this.clearTables();
                 this.insertUserTable();
                 this.hideTables(false);
-                this.hideUserForm(false);
+                this.hideForm(false);
                 this.hideAllContent(false);
             }
             this.setupQ1B = function () {
@@ -373,7 +374,7 @@
                 tableElement.lastChild.innerText = "entree table description";
                 this.insertTableDescription('entree');
                 this.hideTables(false);
-                this.hideUserForm(true);
+                this.hideForm(true);
                 this.hideAllContent(false);
             }
             this.setupQ1D = function () {
@@ -385,7 +386,7 @@
                 this.clearTables();
                 this.insertLocationCountForm();
                 this.insertRestaurantsWithMinLocations();
-                this.hideUserForm(false);
+                this.hideForm(false);
                 this.hideTables(false);
                 this.hideAllContent(false);
             }
@@ -397,7 +398,7 @@
                 this.clearForms();
                 this.insertLocationCountForm();
                 document.getElementById('locMinCount').value = 1;
-                this.hideUserForm(true);
+                this.hideForm(true);
                 this.clearTables();
                 this.insertRestaurantsWithMinLocations();
                 this.hideTables(false);
@@ -411,26 +412,31 @@
                 this.clearForms();
                 this.clearTables();
                 this.insertRestaurantSelectForm();
+                document.getElementById('form0').setAttribute('style', 'float:left;');
                 document.getElementById('form0').appendChild(document.createElement('br'));
                 document.getElementById('form0').appendChild(document.createElement('h3'));
                 document.getElementById('form0').lastChild.innerText = "Tables in Database:";
                 document.getElementById('form0').appendChild(document.createElement('br'));
-
+                document.getElementById('table0').setAttribute('style', 'clear:both;float:right');
                 this.insertLocationSelectForm();
                 this.insertShowTables();
                 this.hideTables(true);
-                this.hideUserForm(false);
+                this.hideForm(false);
                 this.hideAllContent(false);
             }
 
             this.cleanUpQ1A = function () {
                 this.hideAllContent(true);
-                this.hideUserForm(true);
+                this.hideForm(true);
                 this.hideAllContent(false);
             }
             this.cleanUpQ1B = function () {
                 this.hideAllContent(true);
                 this.hideAllContent(false);
+            }
+            this.cleanUpQ2 = function () {
+                document.getElementById('form0').removeAttribute('style');
+                document.getElementById('table0').removeAttribute('style');
             }
 
         }
@@ -453,7 +459,7 @@
                 docElements.insertUserTable();
                 docElements.changePrompt("Hooray! You're newly created account should be visible in the table below."); //display success and next steps message
                 login(function () { }, document.getElementById('name').value, document.getElementById('password'), false); //login, sets some cookies that are needed later.
-                docElements.hideUserForm(true);
+                docElements.hideForm(true);
                 docElements.hideTables(false);
                 docElements.clearForms();
                 docElements.hideAllContent(false);
