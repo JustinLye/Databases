@@ -153,17 +153,17 @@ function getLocationTable(callBackFunct, async) {
 	x.open("GET", "../php/getLocationTable.php", async);
 	x.send();
 }
-function getLocEntreeSummaryTable(callBackFunct, async) {
+function getLocEntreeSummaryTable(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
 		}
 	}
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("GET", "../php/locEntreeSummaryTable.php", async);
+	x.open("GET", "../php/locEntreeSummaryTable.php",async);
 	x.send();
 }
 

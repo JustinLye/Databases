@@ -15,6 +15,29 @@ class util {
 		'Credability');
 	public static function active_user_v_headings() { return self::$_active_user_v_headings; }
 	public static function active_diner_v_headings() { return self::$_active_diner_v_headings; }
+        public static function to_html_table_nostyle($headings, $data) {
+            $str = "<div>
+                        <table>
+                            <tr> ";
+            foreach($headings as $h) {
+                $str .= "<th>" . $h . "</th>";
+            }
+            $str .= "       </tr>";
+            while($r = mysqli_fetch_array($data, MYSQLI_ASSOC)) {
+                $str .= "       <tr>
+                    ";
+                foreach($r as $info) {
+                    $str .= "           <td>$info</td>
+                            ";
+                }
+                $str .= "       </tr>
+                        ";
+            }
+            $str .= "   </table>
+                    </div>
+                    ";
+            return $str;            
+        }
 	public static function to_html_table($headings, $data) {
             $str = "<div class=\"tbl_data\">
                         <table>
