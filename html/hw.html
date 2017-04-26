@@ -18,6 +18,7 @@
                 <select id="hw_questionSelect" onchange="javascript: dispatcher.GeneratePage(document.getElementById('hw_questionSelect').value);">
                     <option value="Q1A">Question 1: Part A</option>
 					<option value="Q1B">Question 1: Part B</option>
+                    <option value="Q1C">Question 1: Part C</option>
                 </select>
             </span>
         </div>
@@ -214,11 +215,37 @@
 			Hide_AllContentNodes(true);
 			Clear_DynamicContentNodes();
 			Hide_AllContentNodes(false);
-		}
+        }
+
+        function Q1C_GeneratePage() {
+            Hide_AllContentNodes(true);
+            Alter_Title('Question 1: Part C');
+            Alter_Heading('');
+            Hide_AllContentNodes(false);
+
+        }
+
+        function Q1C_AddContentBox() {
+            var doc = document.getElementById('hw_dynamicContent');
+            var box0 = document.createElement('div');
+            var box1 = document.createElement('div');
+            var t0 = document.createElement('div');
+            var t1 = document.createElement('div');
+            var t2 = document.createElement('div');
+            box0.setAttribute('id', 'box0');
+            box0.appendChild(document.createElement('div'));
+        }
+
+        function Q1C_CleanPage() {
+            Hide_AllContentNodes(true);
+            Clear_DynamicContentNodes();
+            Hide_AllContentNodes(false)
+        }
 		var dispatcher = new DispatchHandler();
         function Init() {
             dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Q1A_CleanPage);
-			dispatcher.InsertPageHandler("Q1B", Q1B_GeneratePage, Q1B_CleanPage);
+            dispatcher.InsertPageHandler("Q1B", Q1B_GeneratePage, Q1B_CleanPage);
+            dispatcher.InsertPageHandler("Q1C", Q1C_GeneratePage, Q1C_CleanPage);
         }
 		Init();
         
