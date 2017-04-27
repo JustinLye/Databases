@@ -423,6 +423,8 @@ function get_table_description($table_name) {
             return $link->query("DESCRIBE location");
         case 'entree':
             return $link->query("DESCRIBE entree");
+        case 'entree_class':
+            return $link->query("DESCRIBE entree_class");   
     }
 }
 function get_min_locs_table($minval) {

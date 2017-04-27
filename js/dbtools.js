@@ -202,11 +202,11 @@ function getLocEntreeSummaryTable(callBackFunct, elemID, async) {
 	x.send();
 }
 
-function getTableDescription(callBackFunct, tableName, async) {
+function db_TableDescription(callBackFunct, tableName, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
 		}
 	}
 	if (async === 'undefined') {
@@ -283,6 +283,34 @@ function db_CreateLocEntreeView(callBackFunct, locID, elemID, async) {
 	x.open("POST", "php/CreateLocEntreeView.php", async);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("locID=" + locID);
+}
+
+function db_CreateEntreeClassTable(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("GET", "php/CreateEntreeClassTable.php", async);
+	x.send();
+}
+
+function db_DeleteEntreeClassTable(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("GET", "php/DeleteEntreeClassTable.php", async);
+	x.send();
 }
 
 function db_Tables(callBackFunct, elemID, async) {

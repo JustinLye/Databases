@@ -22,6 +22,7 @@
                     <option value="Q1D">Question 1: Part D</option>
                     <option value="Q1E">Question 1: Part E</option>
                     <option value="Q2">Question 2: Part A - D</option>
+                    <option value="Q3">Question 3: Part A - D</option>
                 </select>
             </span>
         </div>
@@ -594,6 +595,91 @@
                 false);
         }
         
+        function Q3_GeneratePage() {
+            Hide_AllContentNodes(true);
+            Alter_Title("Question 3: Part A-D");
+            Alter_Heading('The current tables are listed below. Click the button to create a new table.');
+            let dc = document.getElementById('hw_dynamicContent');
+            let tbl = document.createElement('div');
+            let btn = document.createElement('input');
+            let p0 = document.createElement('p');
+            let dsc = document.createElement('div');
+
+            //set table element attribs
+            Utility_SetAttrVariableValues([tbl, dsc, p0], 'id', ['tblOtables', 'tblDesc', 'p0']);
+            //set button attribs
+            Utility_SetAttr(
+                btn,
+                ['id', 'type', 'value', 'onclick'],
+                ['createTblBtn', 'button', 'Create Table', 'javascript:Q3_CreateTableHandler();']
+            );
+            Utility_AppendChildern(dc, [tbl, btn, p0, dsc]);
+            Q3_DeleteTable();
+            Q3_UpdateTablesOTables();
+            Hide_AllContentNodes(false);
+        }
+
+        function Q3_CreateTableHandler() {
+            Hide_AllContentNodes(true);
+            Q3_CreateTable();
+            Q3_UpdateTablesOTables();
+            Q3_DescribeEntreeClass();
+            Q3_ButtonSwap();
+            Hide_AllContentNodes(false);
+        }
+
+        function Q3_UpdateTablesOTables() {
+            Clear_ByElementId('tblOtables');
+            db_Tables(
+                Insert_ResponseText,
+                'tblOtables',
+                false
+            );
+        }
+
+        function Q3_CreateTable() {
+            db_CreateEntreeClassTable(
+                function (res) {
+                },
+                undefined,
+                false
+            );
+        }
+
+        function Q3_ButtonSwap() {
+            document.getElementById('createTblBtn').remove();
+            let b = document.createElement('input');
+            Utility_SetAttr(
+                b,
+                ['id','type','value','onclick'],
+                ['delBtn','button','Delete Table','javascript:Q3_DeleteTableHandler();']
+            );
+            document.getElementById('hw_dynamicContent').appendChild(b);
+        }
+
+        function Q3_DeleteTableHandler() {
+            Clear_DynamicContentNodes();
+            Q3_GeneratePage();
+        }
+
+        function Q3_DeleteTable() {
+            db_DeleteEntreeClassTable(
+                function(res) {},
+                undefined,
+                false
+            );
+        }
+
+        function Q3_DescribeEntreeClass() {
+            db_TableDescription(
+                Insert_ResponseText,
+                'entree_class',
+                'tblDesc',
+                false
+            );
+            document.getElementById('p0').innerText = "entree_class table description is below.";
+        }
+
         function Utility_SetVarById(v, ids) {
             for (let i = 0; i < v.length; i++) {
                 v[i] = document.getElementById(ids[i]).value;
@@ -640,6 +726,7 @@
             dispatcher.InsertPageHandler("Q1D", Q1D_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q1E", Q1E_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q2", Q2_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q3", Q3_GeneratePage, Clear_Page);
         }
         Init();
     </script>
