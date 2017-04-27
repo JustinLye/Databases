@@ -267,7 +267,7 @@ function add_entree($loc_id, $name, $description, $price) {
     $id = $link->real_escape_string(filter_var($loc_id, FILTER_SANITIZE_NUMBER_INT));
     $n = $link->real_escape_string(filter_var($name, FILTER_SANITIZE_STRING));    
     $desc = $link->real_escape_string(filter_var($description, FILTER_SANITIZE_STRING));    
-    $p = $link->real_escape_string(filter_var($price, FILTER_SANITIZE_NUMBER_FLOAT));
+    $p = $link->real_escape_string(filter_var($price, FILTER_SANITIZE_STRING));
     
     //prepare and execute sql statement
     $stmt = $link->prepare("INSERT INTO entree VALUES(NULL, ?, ?, ?, ?, NULL)");

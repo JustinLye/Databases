@@ -20,6 +20,8 @@
 					<option value="Q1B">Question 1: Part B</option>
                     <option value="Q1C">Question 1: Part C</option>
                     <option value="Q1D">Question 1: Part D</option>
+                    <option value="Q1E">Question 1: Part E</option>
+                    <option value="Q2">Question 2: Part A - D</option>
                 </select>
             </span>
         </div>
@@ -118,10 +120,15 @@
             Alter_Title('Question 1: Part A');
             Alter_Heading('The table below displays the current users already in the database. Please create a user account. After creating the account you should see it displayed in the user table.');
             //adds a div element and 2 child div elements that float left (form0) and right (table0)
-            Q1A_AddContentBox();
             Clear_ByElementId('table0');
-            Insert_UserTable('table0');
+            Q1A_AddContentBox();
             Q1A_AddSignUpForm();
+            db_UserTable(
+                Insert_ResponseText,
+                'table0',
+                false);
+            
+            
             Hide_AllContentNodes(false);
         }
 
@@ -173,6 +180,7 @@
                 });
             doc.lastElementChild.setAttribute('class', 'usr-form');
             doc.lastElementChild.setAttribute('style', 'width:100%;clear:both;float:left;');
+            doc.setAttribute('style', 'max-width: 35%;');
 
         }
         //inserts new user to the user table
@@ -381,20 +389,15 @@
             locSubmit.setAttribute('id', 'submit');
             locSubmit.setAttribute('type', 'submit');
             locSubmit.setAttribute('value', 'Add Location');
-            fldTable.setAttribute('id','fieldTable');
-            fldTable.appendChild(Q1D_FormEntry('Select a Restaurant User', restIDs));
-            fldTable.appendChild(Q1D_FormEntry('Name', locName));
-            fldTable.appendChild(Q1D_FormEntry('Country', locCountry));
-            fldTable.appendChild(Q1D_FormEntry('State', locState));
-            fldTable.appendChild(Q1D_FormEntry('City', locCity));
-            fldTable.appendChild(Q1D_FormEntry('Street', locAddr));
-            fldTable.appendChild(Q1D_FormEntry('Zip', locZip));
-            fldTable.appendChild(Q1D_FormEntry('Phone', locPhone));
-            fldTable.appendChild(Q1D_FormEntry('', locSubmit));
-            locForm.appendChild(fldTable);
+            locForm.appendChild(
+                Utility_AppendForm(
+                'fieldTable',
+                ['Select a Restaurant User', 'Name', 'Country', 'State', 'City', 'Street', 'Zip', 'Phone', ''],
+                [restIDs, locName, locCountry, locState, locCity, locAddr, locZip, locPhone, locSubmit])
+            );
             return locForm;
         }
-        function Q1D_FormEntry(labelTxt, inputElem) {
+        function Utility_FormEntry(labelTxt, inputElem) {
             var formEntry = document.createElement('tr');
             var lbl = document.createElement('td');
             var inElem = document.createElement('td');
@@ -431,13 +434,189 @@
             'locTable',
             false);
         }
+        function Q1E_GeneratePage() {
+            Hide_AllContentNodes(true);
+            Alter_Title('Question 1: Part E');
+            Alter_Heading('The table below is the same table from Q1.D. Left outer joins are used to get the user_name from the user table and the location count from the location table. The SQL Statement is: \"SELECT USR.user_name, COUNT(LOC.location_id) FROM restaurant AS REST LEFT OUTER JOIN user as USR ON REST.user_id = USR.user_id LEFT OUTER JOIN location AS LOC ON LOC.restaurant_id = REST.restaurant_id GROUP BY REST.restaurant_id HAVING COUNT(LOC.location_id) >= 1 ORDER BY COUNT(LOC.location_id) DESC\"');
+            var table0 = document.createElement('div');
+            table0.setAttribute('id', 'table0');
+            document.getElementById('hw_dynamicContent').appendChild(table0);
+            db_RestaurantMinLocationTable(
+            Insert_ResponseText,
+            1,
+            'table0',
+            false);
+            Hide_AllContentNodes(false);
+        }
+        function Q2_GeneratePage_Part2() {
+            Clear_DynamicContentNodes();
+            Hide_AllContentNodes(true);
+            Alter_Title('Question 2: Part A-D');
+            Alter_Heading('The user_generated_v view has been created and is displayed below the add entree form. Also, all views in the database are listed on the far right');
+            Q2_AddContentBox();
+            Q2_UpdateViewBox();
+            Hide_AllContentNodes(false);
 
+        }
+        function Q2_GeneratePage() {
+            Hide_AllContentNodes(true);
+            Alter_Title('Question 2: Part A-D');
+            Alter_Heading('Below are the current views in the database. Click the button to create a view named user_generated_v');
+            let x = document.createElement('div');
+            x.setAttribute('id', 'viewsTable');
+            document.getElementById('hw_dynamicContent').appendChild(x);
+            db_DropView(
+                function (res) {
+                },
+                'user_generated_v',
+                undefined,
+                false);
+            db_ShowViews(
+                Insert_ResponseText,
+                'viewsTable',
+                false);
+            let y = document.createElement('div');
+            let b = document.createElement('input');
+            Utility_SetAttrVariable([b, b, b, b], ['type', 'id', 'value', 'onclick'], ['button', 'createButton', 'Create View', 'javascript:Q2_GeneratePage_Part2();']);
+            y.appendChild(b);
+            document.getElementById('hw_dynamicContent').appendChild(y);
+            Hide_AllContentNodes(false);
+
+        }
+
+        function Q2_AddContentBox() {
+            let box0 = document.createElement('div');
+            let box1 = document.createElement('div');
+            let locBox = document.createElement('select');
+            let entreeForm = document.createElement('form');
+            let name = document.createElement('input');
+            let desc = document.createElement('input');
+            let price = document.createElement('input');
+            let viewBox = document.createElement('div');
+            let locTable = document.createElement('div');
+            let entreeTable = document.createElement('div');
+            let tablesTable = document.createElement('div');
+            let entreeSubmit = document.createElement('input');
+            let viewBoxTitle = document.createElement('p');
+            let box2 = document.createElement('div');
+
+            Utility_SetAttrVariableValues(
+                [name,desc,price,locBox, entreeForm, box0, box1, viewBox, locTable, entreeTable, viewBoxTitle, box2, tablesTable],
+                'id',
+                ['name', 'desc', 'price', 'locid', 'entreeForm', 'box0', 'box1', 'viewBox', 'locTable', 'entreeTable', 'viewBoxTitle','box2', 'tablesTable']);
+            Utility_SetAttrIdentical([name, desc], 'type', 'text');
+            Utility_SetAttrVariable([price, price], ['type', 'step','min','max'], ['number', '0.01','0','99']);
+            Utility_SetAttrVariable([entreeSubmit, entreeSubmit, entreeSubmit], ['type', 'id', 'value'], ['submit', 'submit', 'Add Entree']);
+            Utility_SetAttrVariableValues([name, desc, price], 'placeholder', ['Enter Entree Name...', 'Enter Entree Description...', 'Enter Entree Price...']);
+            Utility_SetAttrIdentical([name, desc, price], 'size', 32);
+            db_LocationIDAndNameList(
+                function (res, elem) {
+                    elem.innerHTML = res.responseText;
+                    elem.setAttribute('id', 'locid');
+                },
+                locBox,
+                false);
+            locBox.setAttribute('onchange', 'javascript:Q2_UpdateViewBox();');
+            box0.setAttribute('style', 'float:left;max-width:42%;');
+            entreeForm.setAttribute('class', 'usr-form');
+            entreeForm.setAttribute('action', 'javascript:Q2_AddEntree();');
+            entreeForm.appendChild(Utility_AppendForm('formFields', ['Select Location', 'Name', 'Description', 'Price', ''], [locBox, name, desc, price, entreeSubmit]));
+            box0.appendChild(entreeForm);
+            box1.setAttribute('style', 'clear:both;float:left;max-width:42%;');
+            viewBoxTitle.innerText=""
+            viewBoxTitle.setAttribute('style', 'clear:both');
+            box1.appendChild(viewBoxTitle);
+            box1.appendChild(viewBox);
+            
+            Utility_SetAttrVariableValues([box2, tablesTable], 'style', ['margin-left: 3%;float:left;max-width: 42%;', 'width:100%;']);
+            box2.appendChild(tablesTable);
+            document.getElementById('hw_dynamicContent').appendChild(box0);
+            document.getElementById('hw_dynamicContent').appendChild(box2);
+            document.getElementById('hw_dynamicContent').appendChild(box1);
+            
+        }
+
+        function Q2_UpdateViewBox() {
+            Clear_ByElementId('viewBox');
+            Clear_ByElementId('tablesTable');
+            let t0 = document.getElementById('viewBox');
+            let t1 = document.getElementById('tablesTable');
+            Utility_SetAttrIdentical([t0, t1], 'hidden', true);
+            db_CreateEntreeView(
+            Insert_ResponseText,
+            document.getElementById('locid').value.split(',')[1],
+            'viewBox',
+            false);
+            db_ShowViews(
+                Insert_ResponseText,
+                'tablesTable',
+                false);
+            t0.removeAttribute('hidden');
+            t1.removeAttribute('hidden');
+        }
+
+        function Q2_AddEntree() {
+            let name = document.getElementById('name').value;
+            let desc = document.getElementById('desc').value;
+            let price = document.getElementById('price').value;
+            let locid = document.getElementById('locid').value.split(',')[1];
+            db_AddEntree(
+                function (res) {
+                    if (res.responseText) {
+                        Q2_UpdateViewBox();
+                    } else {
+                        console.log('Add entree failed');
+                    }
+                },
+                name,
+                desc,
+                price,
+                locid,
+                undefined,
+                false);
+        }
+        
+        function Utility_SetVarById(v, ids) {
+            for (let i = 0; i < v.length; i++) {
+                v[i] = document.getElementById(ids[i]).value;
+            }
+        }
+
+        function Utility_AppendChildern(p, c) {
+            for (let i = 0; i < c.length; i++) {
+                p.appendChild(c[i]);
+            }
+        }
+        function Utility_SetAttrIdentical(elemArray, attr, attrVal) {
+            for (let i = 0; i < elemArray.length; i++) {
+                elemArray[i].setAttribute(attr, attrVal);
+            }
+        }
+        function Utility_SetAttrVariable(elemArray, attr, attrVal) {
+            for (let i = 0; i < elemArray.length; i++) {
+                elemArray[i].setAttribute(attr[i], attrVal[i]);
+            }
+        }
+        function Utility_SetAttrVariableValues(elemArray, attr, attrVal) {
+            for (let i = 0; i < elemArray.length; i++) {
+                elemArray[i].setAttribute(attr, attrVal[i]);
+            }
+        }
+        function Utility_AppendForm(formID, lables, inputElems) {
+            let f = document.createElement('table');
+            for (let i = 0; i < lables.length; i++) {
+                f.appendChild(Utility_FormEntry(lables[i], inputElems[i]));
+            }
+            return f;
+        }
         var dispatcher = new DispatchHandler();
         function Init() {
             dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q1B", Q1B_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q1C", Q1C_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q1D", Q1D_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q1E", Q1E_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q2", Q2_GeneratePage, Clear_Page);
         }
         Init();
     </script>

@@ -35,6 +35,21 @@ function db_RestaurantIDAndNameList(callBackFunct, elemID, async) {
 	x.open("GET", "php/RestaurantNameAndIDList.php", async);
 	x.send();
 }
+
+function db_LocationIDAndNameList(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	};
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/LocationIDAndNameList.php", async);
+	x.send();
+}
+
 function db_StateCodeList(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
@@ -71,14 +86,14 @@ function locationSelectList(callBackFunct, name) {
     x.send("task=1&name="+name);
 }
 
-function addEntree(callBackFunct, name, desc, price, locid) {
+function db_AddEntree(callBackFunct, name, desc, price, locid, elemID, async) {
     var x = new XMLHttpRequest();
     x.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            callBackFunct(this);
+        	elemID === undefined ? callBackFunct(this) : callBackFunct(this,elemID);
         }
     };
-    x.open("POST", "php/add_entree.php", true);
+    x.open("POST", "php/add_entree.php", async);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send("name=" + name + "&description=" + desc + "&price=" + price + "&locid=" + locid);
 }
@@ -116,11 +131,11 @@ function login(callBackFunct, username, password, async) {
 }
 
 //sends request for formated user table
-function getUserTable(callBackFunct, async) {
+function db_UserTable(callBackFunct, elemID, async) {
     var x = new XMLHttpRequest();
     x.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            callBackFunct(this);
+        	elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
         }
     }
     if (async === 'undefined') {
@@ -239,11 +254,11 @@ function getLocIDList_RestIDOnly(callBackFunct, restID, async) {
 	x.send("restID="+restID);
 }
 
-function createEntreeView(callBackFunct, locID, async) {
+function db_CreateEntreeView(callBackFunct, locID, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this,elemID);
 		}
 	}
 	if (async === 'undefined') {
@@ -254,13 +269,45 @@ function createEntreeView(callBackFunct, locID, async) {
 	x.send("locID=" + locID);
 }
 
-function getTables(callBackFunct) {
+function db_Tables(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
 		}
 	}
-	x.open("GET", "php/getTables.php");
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/getTables.php", async);
+	x.send();
+}
+
+function db_DropView(callBackFunct, viewName, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("POST", "php/DropView.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("viewName="+viewName);
+}
+
+function db_ShowViews(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/ShowViews.php", async);
 	x.send();
 }
