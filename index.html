@@ -80,19 +80,6 @@
             }
         }
 
-        //Appends user table to given element
-        function Insert_UserTable(elemID) {
-            if (document.getElementById(elemID) === null) {
-                console.log(elemID + " was not found.");
-            } else {
-                getUserTable(
-                    function (res) {
-                        document.getElementById(elemID).appendChild(document.createElement('div'));
-                        document.getElementById(elemID).lastChild.outerHTML = res.responseText;
-                    },
-                    false);
-            }
-        }
         //Appends user summary table to given element
         function Insert_UserSummaryTable(elemID) {
             if (document.getElementById(elemID) === null) {
@@ -209,16 +196,21 @@
                 password,
                 false);
         }
-
+        
         //Q1B functions
         function Q1B_GeneratePage() {
             Hide_AllContentNodes(true);
             Alter_Title("Question 1: Part B");
             Alter_Heading("The table on the left is the user table. The table on the right is a query of the user table grouped by user type with aggregate functions COUNT(user_id) and MAX(reg_date)");
             Q1B_AddContentBox();
-            Insert_UserTable('table0');
-            //document.getElementsByClassName('usr-frm').firstChild.setAttribute('style', 'max-width: 50%;');
-            Insert_UserSummaryTable('table1');
+            db_UserTable(
+                Insert_ResponseText,
+                'table0',
+                false);
+            db_UserSummaryTable(
+                Insert_ResponseText,
+                'table1',
+                false);
             document.getElementById('table1').getElementsByTagName('table')[0].setAttribute('style', 'width: 100%'); //php function sets width to 50% by default, just removing it here instead of in php
             Hide_AllContentNodes(false);
         }
@@ -452,7 +444,7 @@
             Clear_DynamicContentNodes();
             Hide_AllContentNodes(true);
             Alter_Title('Question 2: Part A-D');
-            Alter_Heading('The user_generated_v view has been created and is displayed below the add entree form. Also, all views in the database are listed on the far right');
+            Alter_Heading('The user_generated_v and user_generate2_v are views that have been and displayed below. All views in the database are listed on the far right');
             Q2_AddContentBox();
             Q2_UpdateViewBox();
             Hide_AllContentNodes(false);
@@ -469,6 +461,12 @@
                 function (res) {
                 },
                 'user_generated_v',
+                undefined,
+                false);
+            db_DropView(
+                function (res) {
+                },
+                'user_generate2_v',
                 undefined,
                 false);
             db_ShowViews(
@@ -499,7 +497,12 @@
             let entreeSubmit = document.createElement('input');
             let viewBoxTitle = document.createElement('p');
             let box2 = document.createElement('div');
-
+            let delButton = document.createElement('input');
+            let view2Box = document.createElement('div');
+            Utility_SetAttr(
+                view2Box,
+                ['id'],
+                ['view2Box']);
             Utility_SetAttrVariableValues(
                 [name,desc,price,locBox, entreeForm, box0, box1, viewBox, locTable, entreeTable, viewBoxTitle, box2, tablesTable],
                 'id',
@@ -509,6 +512,7 @@
             Utility_SetAttrVariable([entreeSubmit, entreeSubmit, entreeSubmit], ['type', 'id', 'value'], ['submit', 'submit', 'Add Entree']);
             Utility_SetAttrVariableValues([name, desc, price], 'placeholder', ['Enter Entree Name...', 'Enter Entree Description...', 'Enter Entree Price...']);
             Utility_SetAttrIdentical([name, desc, price], 'size', 32);
+            Utility_SetAttr(delButton, ['id', 'type', 'name', 'onclick', 'value'], ['delButton', 'button', 'delButton', 'javascript:Clear_DynamicContentNodes();Q2_GeneratePage();', 'Delete View']);
             db_LocationIDAndNameList(
                 function (res, elem) {
                     elem.innerHTML = res.responseText;
@@ -516,20 +520,24 @@
                 },
                 locBox,
                 false);
+            
             locBox.setAttribute('onchange', 'javascript:Q2_UpdateViewBox();');
             box0.setAttribute('style', 'float:left;max-width:42%;');
             entreeForm.setAttribute('class', 'usr-form');
             entreeForm.setAttribute('action', 'javascript:Q2_AddEntree();');
             entreeForm.appendChild(Utility_AppendForm('formFields', ['Select Location', 'Name', 'Description', 'Price', ''], [locBox, name, desc, price, entreeSubmit]));
             box0.appendChild(entreeForm);
-            box1.setAttribute('style', 'clear:both;float:left;max-width:42%;');
-            viewBoxTitle.innerText=""
-            viewBoxTitle.setAttribute('style', 'clear:both');
+            box1.setAttribute('style', 'clear:both;float:left;');
+            viewBoxTitle.innerText="The view on the left (user_generated_v) is a view on a single table (entree). The view on the right (user_generate2_v) is a view on 2 tables (entree, location). Use the form above to insert records that will update the views."
+            viewBoxTitle.setAttribute('style', "clear:both;font-family:'Droid Sans',sans-serif;font-size:14pt;font-weight:bold;color:blue;");
             box1.appendChild(viewBoxTitle);
             box1.appendChild(viewBox);
-            
+            box1.appendChild(view2Box);
             Utility_SetAttrVariableValues([box2, tablesTable], 'style', ['margin-left: 3%;float:left;max-width: 42%;', 'width:100%;']);
             box2.appendChild(tablesTable);
+            box0.appendChild(delButton);
+            Utility_SetAttr(view2Box, ['style'], ['float:left;']);
+            Utility_SetAttr(viewBox, ['style'], ['clear:both;float:left;']);
             document.getElementById('hw_dynamicContent').appendChild(box0);
             document.getElementById('hw_dynamicContent').appendChild(box2);
             document.getElementById('hw_dynamicContent').appendChild(box1);
@@ -538,14 +546,22 @@
 
         function Q2_UpdateViewBox() {
             Clear_ByElementId('viewBox');
+            Clear_ByElementId('view2Box');
             Clear_ByElementId('tablesTable');
             let t0 = document.getElementById('viewBox');
             let t1 = document.getElementById('tablesTable');
-            Utility_SetAttrIdentical([t0, t1], 'hidden', true);
+            let t2 = document.getElementById('view2Box');
+            let p0 = document.getElementById('viewBoxTitle');
+            Utility_SetAttrIdentical([t0, t1, t2,p0], 'hidden', true);
             db_CreateEntreeView(
             Insert_ResponseText,
             document.getElementById('locid').value.split(',')[1],
             'viewBox',
+            false);
+            db_CreateLocEntreeView(
+            Insert_ResponseText,
+            document.getElementById('locid').value.split(',')[1],
+            'view2Box',
             false);
             db_ShowViews(
                 Insert_ResponseText,
@@ -553,6 +569,8 @@
                 false);
             t0.removeAttribute('hidden');
             t1.removeAttribute('hidden');
+            t2.removeAttribute('hidden');
+            p0.removeAttribute('hidden');
         }
 
         function Q2_AddEntree() {
@@ -585,6 +603,11 @@
         function Utility_AppendChildern(p, c) {
             for (let i = 0; i < c.length; i++) {
                 p.appendChild(c[i]);
+            }
+        }
+        function Utility_SetAttr(elem, attrArray, attrValArray) {
+            for (let i = 0; i < attrArray.length; i++) {
+                elem.setAttribute(attrArray[i], attrValArray[i]);
             }
         }
         function Utility_SetAttrIdentical(elemArray, attr, attrVal) {

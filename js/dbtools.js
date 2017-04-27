@@ -146,11 +146,11 @@ function db_UserTable(callBackFunct, elemID, async) {
     x.send();
 }
 
-function getUserSummaryTable(callBackFunct, async) {
+function db_UserSummaryTable(callBackFunct, elemID, async) {
     var x = new XMLHttpRequest();
     x.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            callBackFunct(this);
+        	elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
         }
     }
     if (async === 'undefined') {
@@ -265,6 +265,22 @@ function db_CreateEntreeView(callBackFunct, locID, elemID, async) {
 		async = true;
 	}
 	x.open("POST", "php/createEntreeView.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("locID=" + locID);
+}
+
+
+function db_CreateLocEntreeView(callBackFunct, locID, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === 'undefined') {
+		async = true;
+	}
+	x.open("POST", "php/CreateLocEntreeView.php", async);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("locID=" + locID);
 }
