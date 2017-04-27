@@ -5,7 +5,7 @@ function userTypesSelectList(callBackFunct) {
 			callBackFunct(this);
 		}
 	};
-	x.open("POST", "../php/reqrouter.php", false);
+	x.open("POST", "php/reqrouter.php", false);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("task=3");
 };
@@ -17,12 +17,48 @@ function restaurantSelectList(callBackFunct) {
             callBackFunct(this);
         }
     };
-    x.open("POST", "../php/reqrouter.php", false);
+    x.open("POST", "php/reqrouter.php", false);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send("task=6");
     console.log("request sent");
 }
-
+function db_RestaurantIDAndNameList(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	};
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/RestaurantNameAndIDList.php", async);
+	x.send();
+}
+function db_StateCodeList(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	};
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/StateCodeList.php", async);
+	x.send();
+}
+function db_AddLocation(callBackFunct,rid, name, country, state, city, addr, zip, phone, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	};
+	x.open("POST", "php/AddLocation.php", false);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("restid="+rid+"&name="+name+"&country="+country+"&state="+state+"&city="+city+"&addr="+addr+"&zip="+zip+"&phone="+phone);
+}
 function locationSelectList(callBackFunct, name) {
     var x = new XMLHttpRequest();
     x.onreadystatechange = function () {
@@ -30,26 +66,10 @@ function locationSelectList(callBackFunct, name) {
             callBackFunct(this);
         }
     };
-    x.open("POST", "../php/reqrouter.php", false);
+    x.open("POST", "php/reqrouter.php", false);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send("task=1&name="+name);
 }
-
-function setRestId(async) {
-    if (async === 'undefined') {
-        async = false;
-    } else {
-        async = true;
-    }
-    var x = new XMLHttpRequest();
-    x.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-
-        }
-    };
-    x.open("GET", "../php/reqrouter.php?task=5", async);
-    x.send();
-};
 
 function addEntree(callBackFunct, name, desc, price, locid) {
     var x = new XMLHttpRequest();
@@ -58,7 +78,7 @@ function addEntree(callBackFunct, name, desc, price, locid) {
             callBackFunct(this);
         }
     };
-    x.open("POST", "../php/add_entree.php", true);
+    x.open("POST", "php/add_entree.php", true);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send("name=" + name + "&description=" + desc + "&price=" + price + "&locid=" + locid);
 }
@@ -74,7 +94,7 @@ function signUp(callBackFunct, name, email, type, password, async) {
     if (async === 'undefined') {
         async = true;
     }
-    x.open("POST", "../php/signup.php", async);
+    x.open("POST", "php/signup.php", async);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send("name=" + name + "&email=" + email + "&type=" + type + "&password=" + password);
 }
@@ -90,7 +110,7 @@ function login(callBackFunct, username, password, async) {
     if (async === 'undefined') {
         async = true;
     }
-    x.open("POST", "../php/userlogin.php", async);
+    x.open("POST", "php/userlogin.php", async);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send("username=" + username + "&password=" + password);
 }
@@ -106,7 +126,7 @@ function getUserTable(callBackFunct, async) {
     if (async === 'undefined') {
         async = true;
     }
-    x.open("POST", "../php/get_user_table.php", async);
+    x.open("POST", "php/get_user_table.php", async);
     x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     x.send();
 }
@@ -121,36 +141,36 @@ function getUserSummaryTable(callBackFunct, async) {
     if (async === 'undefined') {
         async = true;
     }
-    x.open("GET", "../php/userSummaryTable.php", async);
+    x.open("GET", "php/userSummaryTable.php", async);
     x.send();
 
 }
 
-function getEntreeTable(callBackFunct, async) {
+function db_EntreeTable(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
 		}
 	}
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("GET", "../php/getEntreeTable.php", async);
+	x.open("GET", "php/getEntreeTable.php", async);
 	x.send();
 }
 
-function getLocationTable(callBackFunct, async) {
+function db_LocationTable(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
 		}
 	}
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("GET", "../php/getLocationTable.php", async);
+	x.open("GET", "php/getLocationTable.php", async);
 	x.send();
 }
 function getLocEntreeSummaryTable(callBackFunct, elemID, async) {
@@ -163,7 +183,7 @@ function getLocEntreeSummaryTable(callBackFunct, elemID, async) {
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("GET", "../php/locEntreeSummaryTable.php",async);
+	x.open("GET", "php/locEntreeSummaryTable.php",async);
 	x.send();
 }
 
@@ -177,19 +197,19 @@ function getTableDescription(callBackFunct, tableName, async) {
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("POST", "../php/describeTable.php", async);
+	x.open("POST", "php/describeTable.php", async);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("table_name=" + tableName);
 }
 
-function getRestaurantMinLocationTable(callBackFunct, minval) {
+function db_RestaurantMinLocationTable(callBackFunct,minval, elemID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this,elemID);
 		}
 	}
-	x.open("GET", "../php/getRestaurantMinLocationTable.php?minval="+minval);
+	x.open("GET", "php/getRestaurantMinLocationTable.php?minval="+minval, async);
 	x.send();
 }
 
@@ -200,7 +220,7 @@ function getRestIDList_HasLocs(callBackFunct) {
 			callBackFunct(this);
 		}
 	}
-	x.open("GET", "../php/getRestIDList_HasLocs.php",false);
+	x.open("GET", "php/getRestIDList_HasLocs.php",false);
 	x.send();
 }
 
@@ -214,7 +234,7 @@ function getLocIDList_RestIDOnly(callBackFunct, restID, async) {
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("POST", "../php/getLocIDList_RestIDOnly.php", async);
+	x.open("POST", "php/getLocIDList_RestIDOnly.php", async);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("restID="+restID);
 }
@@ -229,7 +249,7 @@ function createEntreeView(callBackFunct, locID, async) {
 	if (async === 'undefined') {
 		async = true;
 	}
-	x.open("POST", "../php/createEntreeView.php", async);
+	x.open("POST", "php/createEntreeView.php", async);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("locID=" + locID);
 }
@@ -241,6 +261,6 @@ function getTables(callBackFunct) {
 			callBackFunct(this);
 		}
 	}
-	x.open("GET", "../php/getTables.php");
+	x.open("GET", "php/getTables.php");
 	x.send();
 }

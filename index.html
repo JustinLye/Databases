@@ -2,9 +2,9 @@
 <html>
 <head>
     <title id="hw_title"></title>
-    <link rel="stylesheet" href="../css/default.css" />
-    <script src="../js/dbtools.js"></script>
-    <script src="../js/dispatchHandler.js"></script>
+    <link rel="stylesheet" href="css/default.css" />
+    <script src="js/dbtools.js"></script>
+    <script src="js/dispatchHandler.js"></script>
 </head>
 <body onload="javascript: dispatcher.GeneratePage(document.getElementById('hw_questionSelect').value);">
     <div id="hw_loadingContent">
@@ -19,6 +19,7 @@
                     <option value="Q1A">Question 1: Part A</option>
 					<option value="Q1B">Question 1: Part B</option>
                     <option value="Q1C">Question 1: Part C</option>
+                    <option value="Q1D">Question 1: Part D</option>
                 </select>
             </span>
         </div>
@@ -33,15 +34,16 @@
                 doc.removeChild(doc.firstChild);
             }
         }
-		//Removes all child nodes of element with given id
-		function Clear_ByElementId(elemID) {
-			let e = document.getElementById(elemID);
-			if(e !== null) {
-				while(e.firstChild) {
-					e.removeChild(e.firstChild);
-				}
-			}
-		}
+        //Removes all child nodes of element with given id
+        function Clear_ByElementId(elemID) {
+            let e = document.getElementById(elemID);
+            if (e !== null) {
+                while (e.firstChild) {
+                    e.removeChild(e.firstChild);
+                }
+            }
+        }
+        
         //Hide "hw_allContent" div and show "hw_loadingContent" div
         function Hide_AllContentNodes(makeHidden) {
             let doc = document.getElementById('hw_allContent');
@@ -65,7 +67,7 @@
         function Alter_Heading(str) {
             document.getElementById('hw_heading').innerText = str;
         }
-		
+
         //Generic callback for XMLHttpResponse
         function Insert_ResponseText(res, elemID) {
             if (document.getElementById(elemID) === null) {
@@ -76,33 +78,40 @@
             }
         }
 
-		//Appends user table to given element
-		function Insert_UserTable(elemID) {
-			if(document.getElementById(elemID) === null) {
-				console.log(elemID + " was not found.");
-			} else {
-				getUserTable(
-					function(res) {
-					document.getElementById(elemID).appendChild(document.createElement('div'));
-					document.getElementById(elemID).lastChild.outerHTML = res.responseText;
-					},
-					false);
-			}
-		}
-		//Appends user summary table to given element
-		function Insert_UserSummaryTable(elemID) {
-			if(document.getElementById(elemID) === null) {
-				console.log(elemID + " was not found.");
-			} else {
-				getUserSummaryTable(
-					function(res) {
-						document.getElementById(elemID).appendChild(document.createElement('div'));
-						document.getElementById(elemID).lastChild.outerHTML = res.responseText;
-					},
-					false);
-			}
-		}
-        
+        //Appends user table to given element
+        function Insert_UserTable(elemID) {
+            if (document.getElementById(elemID) === null) {
+                console.log(elemID + " was not found.");
+            } else {
+                getUserTable(
+                    function (res) {
+                        document.getElementById(elemID).appendChild(document.createElement('div'));
+                        document.getElementById(elemID).lastChild.outerHTML = res.responseText;
+                    },
+                    false);
+            }
+        }
+        //Appends user summary table to given element
+        function Insert_UserSummaryTable(elemID) {
+            if (document.getElementById(elemID) === null) {
+                console.log(elemID + " was not found.");
+            } else {
+                getUserSummaryTable(
+                    function (res) {
+                        document.getElementById(elemID).appendChild(document.createElement('div'));
+                        document.getElementById(elemID).lastChild.outerHTML = res.responseText;
+                    },
+                    false);
+            }
+        }
+
+        //Generic clean page function
+        function Clear_Page() {
+            Hide_AllContentNodes(true);
+            Clear_DynamicContentNodes();
+            Hide_AllContentNodes(false);
+        }
+
         //Q1A Related functions
         function Q1A_GeneratePage() {
             Hide_AllContentNodes(true);
@@ -110,8 +119,8 @@
             Alter_Heading('The table below displays the current users already in the database. Please create a user account. After creating the account you should see it displayed in the user table.');
             //adds a div element and 2 child div elements that float left (form0) and right (table0)
             Q1A_AddContentBox();
-			Clear_ByElementId('table0');
-			Insert_UserTable('table0');
+            Clear_ByElementId('table0');
+            Insert_UserTable('table0');
             Q1A_AddSignUpForm();
             Hide_AllContentNodes(false);
         }
@@ -132,7 +141,7 @@
 
         function Q1A_AddSignUpForm() {
             var doc = document.getElementById('form0');
-			Clear_ByElementId('signUpForm');
+            Clear_ByElementId('signUpForm');
             doc.appendChild(document.createElement('div'));
             doc.lastChild.outerHTML = "<form action=\"javascript:Q1A_SignUpNewUser()\" method=\"post\" id=\"signUpForm\">" +
                     "<table id=\"formFields\">" +
@@ -164,54 +173,48 @@
                 });
             doc.lastElementChild.setAttribute('class', 'usr-form');
             doc.lastElementChild.setAttribute('style', 'width:100%;clear:both;float:left;');
-            
+
         }
-		//inserts new user to the user table
-		function Q1A_SignUpNewUser() {
-			let name = document.getElementById('name').value;
-			let email = document.getElementById('email').value;
-			let type = document.getElementById('userTypes').value;
-			let password = document.getElementById('password').value;
-			if(document.getElementById('msg0') === null) {
-				document.getElementById('signUpForm').appendChild(document.createElement('p'));
-				document.getElementById('signUpForm').lastElementChild.setAttribute('id','msg0');
-			}
-			signUp(
-				function(res) {
-					if(res.responseText === "") {
-					    Clear_ByElementId('table0');
-					    Insert_UserTable('table0');
-						document.getElementById('msg0').innerText = "You should see the new user account in the table to the right.";
-					} else {
-						document.getElementById('msg0').innerText = res.responseText;
-					}
-				},
-				name,
-				email,
-				type,
-				password,
-				false);
-		}
-        function Q1A_CleanPage() {
+        //inserts new user to the user table
+        function Q1A_SignUpNewUser() {
+            let name = document.getElementById('name').value;
+            let email = document.getElementById('email').value;
+            let type = document.getElementById('userTypes').value;
+            let password = document.getElementById('password').value;
+            if (document.getElementById('msg0') === null) {
+                document.getElementById('signUpForm').appendChild(document.createElement('p'));
+                document.getElementById('signUpForm').lastElementChild.setAttribute('id', 'msg0');
+            }
+            signUp(
+                function (res) {
+                    if (res.responseText === "") {
+                        Clear_ByElementId('table0');
+                        Insert_UserTable('table0');
+                        document.getElementById('msg0').innerText = "You should see the new user account in the table to the right.";
+                    } else {
+                        document.getElementById('msg0').innerText = res.responseText;
+                    }
+                },
+                name,
+                email,
+                type,
+                password,
+                false);
+        }
+
+        //Q1B functions
+        function Q1B_GeneratePage() {
             Hide_AllContentNodes(true);
-            Clear_DynamicContentNodes();
-            
-            Hide_AllContentNodes(false);
-        }
-		
-		//Q1B functions
-		function Q1B_GeneratePage() {
-			Hide_AllContentNodes(true);
-			Alter_Title("Question 1: Part B");
-			Alter_Heading("The table on the left is the user table. The table on the right is a query of the user table grouped by user type with aggregate functions COUNT(user_id) and MAX(reg_date)");
-			Q1B_AddContentBox();
+            Alter_Title("Question 1: Part B");
+            Alter_Heading("The table on the left is the user table. The table on the right is a query of the user table grouped by user type with aggregate functions COUNT(user_id) and MAX(reg_date)");
+            Q1B_AddContentBox();
             Insert_UserTable('table0');
             //document.getElementsByClassName('usr-frm').firstChild.setAttribute('style', 'max-width: 50%;');
             Insert_UserSummaryTable('table1');
             document.getElementById('table1').getElementsByTagName('table')[0].setAttribute('style', 'width: 100%'); //php function sets width to 50% by default, just removing it here instead of in php
-			Hide_AllContentNodes(false);
-		}
-		function Q1B_AddContentBox() {
+            Hide_AllContentNodes(false);
+        }
+        function Q1B_AddContentBox() {
             var doc = document.getElementById('hw_dynamicContent');
             var cbox = document.createElement('div');
             cbox.setAttribute('id', 'hw_Q1B_contentBox');
@@ -221,13 +224,7 @@
             cbox.appendChild(document.createElement('div'));
             cbox.lastChild.setAttribute('id', 'table1');
             cbox.lastChild.setAttribute('style', 'float:left;margin-left: 5%;max-width: 48%;');
-            doc.appendChild(cbox);		
-		}
-		
-		function Q1B_CleanPage() {
-			Hide_AllContentNodes(true);
-			Clear_DynamicContentNodes();
-			Hide_AllContentNodes(false);
+            doc.appendChild(cbox);
         }
 
         function Q1C_GeneratePage() {
@@ -236,6 +233,8 @@
             Alter_Heading('Below is a query that displays the name of each location (from the location table), the number of entrees and average entree price by location (from the entree table).');
             Q1C_AddContentBox();
             getLocEntreeSummaryTable(Insert_ResponseText, 'queryTable', false);
+            db_LocationTable(Insert_ResponseText, 'locTable', false);
+            db_EntreeTable(Insert_ResponseText, 'entreeTable', false);
             Hide_AllContentNodes(false);
 
         }
@@ -266,7 +265,7 @@
             h0.setAttribute('id', 'queryTableTitle');
             h1.setAttribute('id', 'locTableTitle');
             h2.setAttribute('id', 'entreeTableTitle');
-            
+
             //assign text to table titles
             h0.innerText = "Query on two base tables with two aggregate functions.";
             h1.innerText = "Location (base table)";
@@ -274,8 +273,8 @@
 
             //setting style attributes of elements
             t0.setAttribute('style', 'width:100%');
-            locBox.setAttribute('style', 'max-width:48%;float:left');
-            entreeBox.setAttribute('style', 'max-width:48%;float:left;margin-left:5%');
+            locBox.setAttribute('style', 'max-width:45%;float:left');
+            entreeBox.setAttribute('style', 'max-width:45%;float:right;');
             h1.setAttribute('style', 'clear:both;');
             h2.setAttribute('style', 'clear:both;');
             t1.setAttribute('style', 'clear:both;');
@@ -294,21 +293,153 @@
             doc.appendChild(box1);
         }
 
-        function Q1C_CleanPage() {
+        function Q1D_GeneratePage() {
             Hide_AllContentNodes(true);
-            Clear_DynamicContentNodes();
-            Hide_AllContentNodes(false)
+            Alter_Title('Question 1: Part D');
+            Alter_Heading('The table below is a query of all restaurant users that have total locations greater than or equal the number specified in the input box. The query uses a GROUP BY(restaurant_id) HAVING COUNT(location_id) >= ?. Change the number in the box below to see the query change. You may also select a restaurant and add locations')
+            Q1D_AddContentBox();
+            db_RestaurantMinLocationTable(Insert_ResponseText, 0, 'locTable', false);
+            Hide_AllContentNodes(false);
         }
-		var dispatcher = new DispatchHandler();
+        function Q1D_AddContentBox() {
+            let box0 = document.createElement('div');
+            let box1 = document.createElement('div');
+            let table0 = document.createElement('div');
+            let numInput = document.createElement('input');
+            let numPrompt = document.createElement('p');
+            
+            numInput.setAttribute('id', 'locMin');
+            numInput.setAttribute('type', 'number');
+            numInput.setAttribute('min', '0');
+            numInput.setAttribute('max', '999');
+            numInput.setAttribute('value', '0');
+            numInput.setAttribute('style', "float:right;width:80px;padding: 4px;");
+            numInput.setAttribute('onchange', 'javascript:Q1D_UpdateRestMinTable();')
+            numPrompt.setAttribute('id', 'numPrompt');
+            numPrompt.setAttribute('style', "float:left;margin-right: 5px;display:inline-block;font-size:9pt;font-family:'Droid Sans',sans-serif;overflow-wrap:normal;")
+            numPrompt.innerText = "Change the number to update table and/or and a new location for an existing restaurant user.";
+            box0.setAttribute('id', 'inBox');
+            box0.setAttribute('style', 'clear:both;float:left;max-width: 45%;');
+            box0.appendChild(numPrompt);
+            box0.appendChild(numInput);
+            box0.appendChild(Q1D_CreateAddLocForm());
+            box1.setAttribute('id', 'displayBox');
+            box1.setAttribute('style', 'float:left; margin-left: 5%; max-width: 45%;');
+            table0.setAttribute('id', 'locTable');
+            table0.setAttribute('style', 'clear:both; width:100%');
+            box1.appendChild(table0);
+            document.getElementById('hw_dynamicContent').appendChild(box0);
+            document.getElementById('hw_dynamicContent').appendChild(box1);
+        }
+        function Q1D_CreateAddLocForm() {
+            var locForm = document.createElement('form');
+            var restIDs = document.createElement('span');
+            var locName = document.createElement('input');
+            var locCountry = document.createElement('select');
+            var locState = document.createElement('select');
+            var locCity = document.createElement('input');
+            var locAddr = document.createElement('input');
+            var locZip = document.createElement('input');
+            var locPhone = document.createElement('input');
+            var locSubmit = document.createElement('input');
+            var fldTable = document.createElement('table');
+            locForm.setAttribute('id', 'addLocForm');
+            locForm.setAttribute('class', 'usr-form');
+            locForm.setAttribute('style', 'clear:both');
+            locForm.setAttribute('action', 'javascript:Q1D_AddLocation();');
+            db_RestaurantIDAndNameList(function (res, elem) {
+                elem.innerHTML = res.responseText;
+                elem.firstElementChild.setAttribute('id', 'restid');
+            },
+            restIDs,
+            false);
+            locName.setAttribute('id', 'name');
+            locName.setAttribute('type', 'text');
+            locName.setAttribute('placeholder', 'Enter Location Name');
+            locCountry.innerHTML = "<select><option value='US'>US</option></select>";
+            locCountry.setAttribute('id', 'country');
+            db_StateCodeList(
+                function (res, elem) {
+                    elem.innerHTML = res.responseText;
+                    elem.setAttribute('id', 'state');
+                },
+                locState,
+                false);
+            locCity.setAttribute('id', 'city');
+            locCity.setAttribute('type', 'text');
+            locCity.setAttribute('placeholder', 'Enter City...');
+            locCity.setAttribute('required', 'true');
+            locAddr.setAttribute('id', 'addr');
+            locAddr.setAttribute('type', 'text');
+            locAddr.setAttribute('placeholder', 'Enter Street Address...');
+            locZip.setAttribute('id', 'zip');
+            locZip.setAttribute('type', 'text');
+            locZip.setAttribute('placeholder', 'Enter Zip Code...');
+            locPhone.setAttribute('id', 'phone');
+            locPhone.setAttribute('type', 'tel');
+            locPhone.setAttribute('placeholder', 'Enter Phone Number...');
+            locSubmit.setAttribute('id', 'submit');
+            locSubmit.setAttribute('type', 'submit');
+            locSubmit.setAttribute('value', 'Add Location');
+            fldTable.setAttribute('id','fieldTable');
+            fldTable.appendChild(Q1D_FormEntry('Select a Restaurant User', restIDs));
+            fldTable.appendChild(Q1D_FormEntry('Name', locName));
+            fldTable.appendChild(Q1D_FormEntry('Country', locCountry));
+            fldTable.appendChild(Q1D_FormEntry('State', locState));
+            fldTable.appendChild(Q1D_FormEntry('City', locCity));
+            fldTable.appendChild(Q1D_FormEntry('Street', locAddr));
+            fldTable.appendChild(Q1D_FormEntry('Zip', locZip));
+            fldTable.appendChild(Q1D_FormEntry('Phone', locPhone));
+            fldTable.appendChild(Q1D_FormEntry('', locSubmit));
+            locForm.appendChild(fldTable);
+            return locForm;
+        }
+        function Q1D_FormEntry(labelTxt, inputElem) {
+            var formEntry = document.createElement('tr');
+            var lbl = document.createElement('td');
+            var inElem = document.createElement('td');
+            lbl.innerText = labelTxt;
+            inElem.appendChild(inputElem);
+            formEntry.appendChild(lbl);
+            formEntry.appendChild(inElem);
+            return formEntry;
+        }
+        function Q1D_AddLocation() {
+            let rid = document.getElementById('restid').value;
+            let name = document.getElementById('name').value;
+            let country = document.getElementById('country').value;
+            let state = document.getElementById('state').value;
+            let city = document.getElementById('city').value;
+            let addr = document.getElementById('addr').value;
+            let zip = document.getElementById('zip').value;
+            let phone = document.getElementById('phone').value;
+            db_AddLocation(
+            function (res, elem) {
+                if (res.responseText === "") {
+                    Q1D_UpdateRestMinTable();
+                } else {
+                    console.log("Error: " + res.responseText);
+                }
+            },
+            rid, name, country, state, city, addr, zip, phone, 'locTable', false);
+        }
+        function Q1D_UpdateRestMinTable() {
+            Clear_ByElementId('locTable');
+            db_RestaurantMinLocationTable(
+            Insert_ResponseText,
+            document.getElementById('locMin').value,
+            'locTable',
+            false);
+        }
+
+        var dispatcher = new DispatchHandler();
         function Init() {
-            dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Q1A_CleanPage);
-            dispatcher.InsertPageHandler("Q1B", Q1B_GeneratePage, Q1B_CleanPage);
-            dispatcher.InsertPageHandler("Q1C", Q1C_GeneratePage, Q1C_CleanPage);
+            dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q1B", Q1B_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q1C", Q1C_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q1D", Q1D_GeneratePage, Clear_Page);
         }
-		Init();
-        
-        
-        
+        Init();
     </script>
 </body>
 </html>

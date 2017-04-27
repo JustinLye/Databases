@@ -459,6 +459,12 @@ function get_loc_id_list_rest_id_only($restID) {
     return $stmt->get_result();
 }
 
+function restaurant_id_name_list() {
+    $db = new db_connection;
+    $link = $db->dblink();
+    return $link->query("SELECT REST.restaurant_id, USR.user_name FROM restaurant AS REST, user AS USR WHERE REST.user_id = USR.user_id");
+}
+
 function create_entree_view($locID) {
     $db = new db_connection;
     $link = $db->dblink();
