@@ -24,7 +24,8 @@
                     <option value="Q2">Question 2: Part A - D</option>
                     <option value="Q3AB">Question 3: Part A - B</option>
                     <option value="Q3CD">Question 3: Part C - D</option>
-                    <option value="Q4">Question 4</option>
+                    <option value="Q4A">Question 4: Part A</option>
+                    <option value="Q4B">Question 4: Part B</option>
                     <option value="Q5">Question 5</option>
                     <option value="Q6">Question 6</option>
                     <option value="Q7">Question 7</option>
@@ -1127,12 +1128,105 @@
             Hide_AllContentNodes(false);
         }
         
-        function Q4_GeneratePage() {
+        function Q4B_GeneratePage() {
             //hide everything
             Hide_AllContentNodes(true);
             //update title and prompt
-            Alter_Title('Question 4');
-            Alter_Heading('Search for User by UNIQUE INDEX user_name');
+            Alter_Title('Question 4: Part B');
+            Alter_Heading('Search for User by UNIQUE INDEX (user_name,email) - secondary index');
+
+            //create some elements
+            let box0 = document.createElement('div'); //box to hold form
+            let box1 = document.createElement('div'); //box for user table
+            let utbl = document.createElement('div'); //user table
+            let f = document.createElement('form'); //input form
+            let name = document.createElement('input'); //table name input box
+            let email = document.createElement('input'); //email 
+            let btn = document.createElement('input'); //submit button
+            let lbl = document.createElement('p'); //response
+
+            //set some attributes
+            Utility_SetAttrVariableValues(
+                [box0, box1, utbl, f, name, btn, lbl, email],
+                'id',
+                ['box0', 'box1', 'utbl', 'form0', 'name', 'btn', 'lbl', 'email']
+            );
+            Utility_SetAttrVariableValues(
+                [box0, box1],
+                'style',
+                ['float:left; max-width: 42%;', 'float:left; max-width: 42%; margin-left: 3%;']
+            );
+            Utility_SetAttr(
+                name,
+                ['type', 'size', 'placeholder', 'required', 'onfocus'],
+                ['text', '32', 'Enter User Name...', 'true', 'javascript:Q4B_UserSearchFocusHandler();']
+            );
+            Utility_SetAttr(
+                email,
+                ['type', 'size', 'placeholder', 'required', 'onfocus'],
+                ['email', '32', 'Enter Email...', 'true', 'javascript:Q4B_UserSearchFocusHandler();']
+            );
+            Utility_SetAttr(
+                btn,
+                ['type', 'value'],
+                ['submit', 'Check Table']
+            );
+            Utility_SetAttr(
+                f,
+                ['class', 'action'],
+                ['usr-form', 'javascript:Q4B_UserSearchHandler();']
+            );
+            lbl.setAttribute('hidden', 'true');
+
+            //create form and append to doc tree
+            f.appendChild(
+                Utility_AppendForm(
+                    undefined,
+                    ['Search by Name:', 'And by Email','', ''],
+                    [name, email, btn, lbl]
+                )
+            );
+            box0.appendChild(f);
+            box1.appendChild(utbl);
+            Utility_AppendChildern(
+                document.getElementById('hw_dynamicContent'),
+                [box0, box1]
+            );
+
+            //Update the user table
+            Q4B_UpdateTablesTable();
+            //unhide everything
+            Hide_AllContentNodes(false);
+
+        }
+
+        function Q4B_UserSearchHandler() {
+            Hide_AllContentNodes(true);
+            Clear_ByElementId('utbl');
+            Q4B_UpdateTablesTable();
+            Hide_AllContentNodes(false);
+        }
+        function Q4B_UserSearchFocusHandler() {
+            Clear_ByElementId('lbl');
+        }
+
+        function Q4B_UpdateTablesTable() {
+            Clear_ByElementId('utbl');
+            db_GetUserByUniqueKey(
+                Insert_ResponseText,
+                document.getElementById('name').value,
+                document.getElementById('email').value,
+                'utbl',
+                false
+            );
+
+        }
+        function Q4A_GeneratePage() {
+            //hide everything
+            Hide_AllContentNodes(true);
+            //update title and prompt
+            Alter_Title('Question 4: Part B');
+            Alter_Heading('Search for User by PRIMARY INDEX user_id');
 
             //create some elements
             let box0 = document.createElement('div'); //box to hold form
@@ -1156,8 +1250,8 @@
             );
             Utility_SetAttr(
                 name,
-                ['type', 'size', 'placeholder', 'required', 'onfocus'],
-                ['text', '32', 'Enter Table Name...', 'true', 'javascript:Q4_UserSearchFocusHandler();']
+                ['type', 'size', 'placeholder', 'required', 'onfocus','min','max'],
+                ['number', '32', 'Enter User ID...', 'true', 'javascript:Q4A_UserSearchFocusHandler();', '0','999']
             );
             Utility_SetAttr(
                 btn,
@@ -1167,7 +1261,7 @@
             Utility_SetAttr(
                 f,
                 ['class', 'action'],
-                ['usr-form', 'javascript:Q4_UserSearchHandler();']
+                ['usr-form', 'javascript:Q4A_UserSearchHandler();']
             );
             lbl.setAttribute('hidden', 'true');
 
@@ -1175,7 +1269,7 @@
             f.appendChild(
                 Utility_AppendForm(
                     undefined,
-                    ['User Name:', '', ''],
+                    ['Search User Number:', '', ''],
                     [name, btn, lbl]
                 )
             );
@@ -1187,25 +1281,25 @@
             );
 
             //Update the user table
-            Q4_UpdateTablesTable();
+            Q4A_UpdateTablesTable();
             //unhide everything
             Hide_AllContentNodes(false);
 
         }
 
-        function Q4_UserSearchHandler() {
+        function Q4A_UserSearchHandler() {
             Hide_AllContentNodes(true);
             Clear_ByElementId('utbl');
-            Q4_UpdateTablesTable();
+            Q4A_UpdateTablesTable();
             Hide_AllContentNodes(false);
         }
-        function Q4_UserSearchFocusHandler() {
+        function Q4A_UserSearchFocusHandler() {
             Clear_ByElementId('lbl');
         }
 
-        function Q4_UpdateTablesTable() {
+        function Q4A_UpdateTablesTable() {
             Clear_ByElementId('utbl');
-            db_GetUserByNameContains(
+            db_GetUserByID(
                 Insert_ResponseText,
                 document.getElementById('name').value,
                 'utbl',
@@ -1213,7 +1307,6 @@
             );
 
         }
-        
 
         function Utility_SetVarById(v, ids) {
             for (let i = 0; i < v.length; i++) {
@@ -1263,10 +1356,11 @@
             dispatcher.InsertPageHandler("Q2", Q2_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3AB", Q3AB_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3CD", Q3CD_GeneratePage, Clear_Page);
-            dispatcher.InsertPageHandler("Q5", Q4_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q5", Q4B_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q6", Q6_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q7", Q7_GeneratePage, Clear_Page);
-            dispatcher.InsertPageHandler("Q4", Q4_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q4B", Q4B_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q4A", Q4A_GeneratePage, Clear_Page);
         }
         Init();
     </script>

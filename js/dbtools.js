@@ -326,6 +326,35 @@ function db_GetUserByNameContains(callBackFunct, name, elemID, async) {
 	x.send("name="+name);
 }
 
+function db_GetUserByID(callBackFunct, name, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("POST", "php/GetUserByID.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("name=" + name);
+}
+
+function db_GetUserByUniqueKey(callBackFunct, name, email, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("POST", "php/GetUserByUniqueKey.php", async);
+	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	x.send("name=" + name + "&email=" + email);
+}
 
 function db_CreateEntreeClassTable(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
