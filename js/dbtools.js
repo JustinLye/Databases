@@ -239,6 +239,29 @@ function getRestIDList_HasLocs(callBackFunct) {
 	x.send();
 }
 
+
+function db_AddEntreeClassColumn(callBackFunct) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	x.open("GET", "php/AddEntreeClassColumn.php", false);
+	x.send();
+}
+
+function db_DeleteEntreeClassColumn(callBackFunct) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			callBackFunct(this);
+		}
+	}
+	x.open("GET", "php/DeleteEntreeClassColumn.php", false);
+	x.send();
+}
+
 function getLocIDList_RestIDOnly(callBackFunct, restID, async) {
 	var x = new XMLHttpRequest();
 	x.onreadystatechange = function () {
