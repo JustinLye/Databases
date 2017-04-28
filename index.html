@@ -24,7 +24,7 @@
                     <option value="Q2">Question 2: Part A - D</option>
                     <option value="Q3AB">Question 3: Part A - B</option>
                     <option value="Q3CD">Question 3: Part C - D</option>
-                    <option value="Q5A">Question 5: Part A</option>
+                    <option value="Q5">Question 5</option>
                     <option value="Q6">Question 6</option>
                     <option value="Q7">Question 7</option>
                 </select>
@@ -1077,7 +1077,7 @@
         }
 
         //Question 5 Functions
-        function Q5A_GeneratePage() {
+        function Q5_GeneratePage() {
             //hide everything
             Hide_AllContentNodes(true);
             //update the title and heading
@@ -1088,6 +1088,8 @@
             let box1 = document.createElement('div'); //box to hold sql statement
             let qtbl = document.createElement('div'); //container for query table
             let qp = document.createElement('p'); //for the sql stmt
+            let pdiv = document.createElement('div'); //container for extended expl.
+            let p = document.createElement('p'); //for ext. explaination
 
             //set some attributes
             Utility_SetAttrVariableValues(
@@ -1100,13 +1102,14 @@
                 'style',
                 ['float:left;max-width:42%','float:left;max-width:42%;margin-left:3%']
             );
-
+            p.innerText = "The subquery is in the FROM clause. It is executed wants and returns a relation containing the user_id's of all the restaurants w/o locations. SUBQUERY == (SELECT REST.user_id FROM restaurant AS REST WHERE REST.restaurant_id NOT IN ('CORRELATED QUERY')) AS NOLOC. The correlated query is within the subquery. It is evaluated for every row in the restaurant table. CORRELATED QUERY (in parenthesis) == WHERE REST.restaurant_id NOT IN (SELECT LOC.restaurant_id FROM location AS LOC)."
             //append stuff to doc tree
             box0.appendChild(qtbl);
             box1.appendChild(qp);
+            pdiv.appendChild(p);
             Utility_AppendChildern(
                 document.getElementById('hw_dynamicContent'),
-                [box0,box1]
+                [pdiv,box0,box1]
             );
 
             //go get the info
@@ -1172,7 +1175,7 @@
             dispatcher.InsertPageHandler("Q2", Q2_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3AB", Q3AB_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3CD", Q3CD_GeneratePage, Clear_Page);
-            dispatcher.InsertPageHandler("Q5A", Q5A_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q5", Q5_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q6", Q6_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q7", Q7_GeneratePage, Clear_Page);
         }

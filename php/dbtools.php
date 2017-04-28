@@ -395,12 +395,7 @@ function get_user_summary_table() {
     return $link->query($sql_str);
 }
 
-function get_entree_table() {
-    $db = new db_connection;
-    $link = $db->dblink();
-    $sql_str = "SELECT * FROM entree";
-    return $link->query($sql_str);
-}
+
 function get_location_table() {
     $db = new db_connection;
     $link = $db->dblink();
