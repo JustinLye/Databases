@@ -422,3 +422,16 @@ function db_UserAddTrigger(callBackFunct, elemID, async) {
 	x.open("GET", "php/UserAddTriggerTable.php", async);
 	x.send();
 }
+function db_TableExists(callBackFunct, tableName, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/TableExists.php?tableName="+tableName, async);
+	x.send();
+}

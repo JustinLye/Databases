@@ -25,6 +25,7 @@
                     <option value="Q3AB">Question 3: Part A - B</option>
                     <option value="Q3CD">Question 3: Part C - D</option>
                     <option value="Q6">Question 6</option>
+                    <option value="Q7">Question 7</option>
                 </select>
             </span>
         </div>
@@ -965,6 +966,104 @@
             Hide_AllContentNodes(false);
         }
 
+        //Q7 Functions
+        function Q7_GeneratePage() {
+            //hide everything
+            Hide_AllContentNodes(true);
+            //update title and prompt
+            Alter_Title('Question 7');
+            Alter_Heading('A function TableExists() returns 1 if a given table name exists in the jlye schema and 0 otherwise. Enter table names in the form below to see if they exists or not.');
+
+            //create some elements
+            let box0 = document.createElement('div'); //box to hold form
+            let box1 = document.createElement('div'); //box for user table
+            let utbl = document.createElement('div'); //user table
+            let f = document.createElement('form'); //input form
+            let name = document.createElement('input'); //table name input box
+            let btn = document.createElement('input'); //submit button
+            let lbl = document.createElement('p'); //response
+
+            //set some attributes
+            Utility_SetAttrVariableValues(
+                [box0, box1, utbl, f, name, btn, lbl],
+                'id',
+                ['box0','box1','utbl','form0','tableName','btn','lbl']
+            );
+            Utility_SetAttrVariableValues(
+                [box0, box1],
+                'style',
+                ['float:left; max-width: 42%;', 'float:left; max-width: 42%; margin-left: 3%;']
+            );
+            Utility_SetAttr(
+                name,
+                ['type','size','placeholder','required','onfocus'],
+                ['text','32','Enter Table Name...','true','javascript:Q7_TableNameFocusHandler();']
+            );
+            Utility_SetAttr(
+                btn,
+                ['type','value'],
+                ['submit','Check Table']
+            );
+            Utility_SetAttr(
+                f,
+                ['class','action'],
+                ['usr-form','javascript:Q7_TableExistsHandler();']
+            );
+            lbl.setAttribute('hidden', 'true');
+
+            //create form and append to doc tree
+            f.appendChild(
+                Utility_AppendForm(
+                    undefined,
+                    ['Table Name:','',''],
+                    [name,btn,lbl]
+                )
+            );
+            box0.appendChild(f);
+            box1.appendChild(utbl);
+            Utility_AppendChildern(
+                document.getElementById('hw_dynamicContent'),
+                [box0,box1]
+            );
+            
+            //Update the user table
+            Q7_UpdateTablesTable();
+            //unhide everything
+            Hide_AllContentNodes(false);
+
+        }
+
+        function Q7_TableNameFocusHandler() {
+            Clear_ByElementId('lbl');
+        }
+
+        function Q7_UpdateTablesTable() {
+            Clear_ByElementId('utbl');
+            db_Tables(
+                Insert_ResponseText,
+                'utbl',
+                false
+            );
+
+        }
+
+        function Q7_TableExistsHandler() {
+            Clear_ByElementId('lbl');
+            db_TableExists(
+                function (res, elem) {
+                    if (res.responseText === "1") {
+                        document.getElementById('lbl').innerText = document.getElementById('tableName').value + " is an existing table.";
+                        document.getElementById('lbl').removeAttribute('hidden');
+                    } else {
+                        document.getElementById('lbl').innerText = document.getElementById('tableName').value + " is NOT an existing table.";
+                        document.getElementById('lbl').removeAttribute('hidden');
+                    }
+                },
+                document.getElementById('tableName').value,
+                'lbl',
+                false
+            );
+        }
 
         function Utility_SetVarById(v, ids) {
             for (let i = 0; i < v.length; i++) {
@@ -1015,6 +1114,7 @@
             dispatcher.InsertPageHandler("Q3AB", Q3AB_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3CD", Q3CD_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q6", Q6_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q7", Q7_GeneratePage, Clear_Page);
         }
         Init();
     </script>
