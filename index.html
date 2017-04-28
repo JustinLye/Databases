@@ -236,6 +236,7 @@
 
         }
         function Q1C_AddContentBox() {
+            //create some elements
             let doc = document.getElementById('hw_dynamicContent');
             let box0 = document.createElement('div'); //for query
             let box1 = document.createElement('div'); //for original tables
@@ -248,45 +249,50 @@
             let h1 = document.createElement('h3'); //For location table title
             let h2 = document.createElement('h3'); //For entree table title
 
-            //setting id attributes of elements
-            box0.setAttribute('id', 'queryBox');
-            box1.setAttribute('id', 'baseTableBox');
-            locBox.setAttribute('id', 'locBox');
-            entreeBox.setAttribute('id', 'entreeBox');
-
-            t0.setAttribute('id', 'queryTable');
-            t1.setAttribute('id', 'locTable');
-            t2.setAttribute('id', 'entreeTable');
-
-            h0.setAttribute('id', 'queryTableTitle');
-            h1.setAttribute('id', 'locTableTitle');
-            h2.setAttribute('id', 'entreeTableTitle');
+            //set some element attributes
+            Utility_SetAttrVariableValues(
+                [box0,box1,locBox,entreeBox,t0,t1,t2,h0,h1,h2],
+                'id',
+                ['queryBox','baseTableBox','locBox','entreeBox','queryTable','locTable','entreeTable','queryTableTitle','locTableTitle','entreeTableTitle']
+            );
+            
+            Utility_SetAttrVariableValues(
+                [t0,locBox,entreeBox,box1],
+                'style',
+                ['width:100%','max-width:45%;float:left','max-width:45%;float:right;','margin-top: 5%;']
+            );
+            Utility_SetAttrIdentical(
+                [h1,h2,t1,t2],
+                'style',
+                'clear:both;'
+            );
 
             //assign text to table titles
             h0.innerText = "Query on two base tables with two aggregate functions.";
             h1.innerText = "Location (base table)";
             h2.innerText = "Entree (base table)";
 
-            //setting style attributes of elements
-            t0.setAttribute('style', 'width:100%');
-            locBox.setAttribute('style', 'max-width:45%;float:left');
-            entreeBox.setAttribute('style', 'max-width:45%;float:right;');
-            h1.setAttribute('style', 'clear:both;');
-            h2.setAttribute('style', 'clear:both;');
-            t1.setAttribute('style', 'clear:both;');
-            t2.setAttribute('style', 'clear:both;');
-            box1.setAttribute('style', 'margin-top: 5%;')
-            //append elements to boxes
-            locBox.appendChild(h1);
-            locBox.appendChild(t1);
-            entreeBox.appendChild(h2);
-            entreeBox.appendChild(t2);
-            box0.appendChild(h0);
-            box0.appendChild(t0);
-            box1.appendChild(locBox);
-            box1.appendChild(entreeBox);
-            doc.appendChild(box0);
-            doc.appendChild(box1);
+            //append elements to doc tree
+            Utility_AppendChildern(
+                locBox,
+                [h1,t1]
+            );
+            Utility_AppendChildern(
+                entreeBox,
+                [h2,t2]
+            );
+            Utility_AppendChildern(
+                box0,
+                [h0,t0]
+            );
+            Utility_AppendChildern(
+                box1,
+                [locBox, entreeBox]
+            );
+            Utility_AppendChildern(
+                doc,
+                [box0,box1]
+            );
         }
         function Q1D_GeneratePage() {
             Hide_AllContentNodes(true);
