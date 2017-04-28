@@ -24,6 +24,7 @@
                     <option value="Q2">Question 2: Part A - D</option>
                     <option value="Q3AB">Question 3: Part A - B</option>
                     <option value="Q3CD">Question 3: Part C - D</option>
+                    <option value="Q6">Question 6</option>
                 </select>
             </span>
         </div>
@@ -71,7 +72,6 @@
         function Alter_Heading(str) {
             document.getElementById('hw_heading').innerText = str;
         }
-
         //Generic callback for XMLHttpResponse
         function Insert_ResponseText(res, elemID) {
             if (document.getElementById(elemID) === null) {
@@ -81,7 +81,6 @@
                 document.getElementById(elemID).lastChild.outerHTML = res.responseText;
             }
         }
-
         //Appends user summary table to given element
         function Insert_UserSummaryTable(elemID) {
             if (document.getElementById(elemID) === null) {
@@ -95,14 +94,12 @@
                     false);
             }
         }
-
         //Generic clean page function
         function Clear_Page() {
             Hide_AllContentNodes(true);
             Clear_DynamicContentNodes();
             Hide_AllContentNodes(false);
         }
-
         //Q1A Related functions
         function Q1A_GeneratePage() {
             Hide_AllContentNodes(true);
@@ -120,7 +117,6 @@
             
             Hide_AllContentNodes(false);
         }
-
         function Q1A_AddContentBox() {
             var doc = document.getElementById('hw_dynamicContent');
             var cbox = document.createElement('div');
@@ -134,7 +130,6 @@
 
             doc.appendChild(cbox);
         }
-
         function Q1A_AddSignUpForm() {
             var doc = document.getElementById('form0');
             Clear_ByElementId('signUpForm');
@@ -163,10 +158,11 @@
                     "</tr> " +
                 "</table> " +
             "</form>";
-            userTypesSelectList(
-                function (res) {
-                    document.getElementById('userTypes').outerHTML = "<select id=\"userTypes\">" + res.responseText + "</select>"; //the XMLHttpRequest will return all valid user types found in the database. Each type will be enclosed in <option> tags. Thus, responseText is a string of user types enclosed in option tags sent from the server.
-                });
+            db_UserTypes(
+                Insert_ResponseText,
+                'type',
+                false
+            );
             doc.lastElementChild.setAttribute('class', 'usr-form');
             doc.lastElementChild.setAttribute('style', 'width:100%;clear:both;float:left;');
             doc.setAttribute('style', 'max-width: 35%;');
@@ -198,7 +194,6 @@
                 password,
                 false);
         }
-        
         //Q1B functions
         function Q1B_GeneratePage() {
             Hide_AllContentNodes(true);
@@ -228,7 +223,6 @@
             cbox.lastChild.setAttribute('style', 'float:left;margin-left: 5%;max-width: 48%;');
             doc.appendChild(cbox);
         }
-
         function Q1C_GeneratePage() {
             Hide_AllContentNodes(true);
             Alter_Title('Question 1: Part C');
@@ -240,7 +234,6 @@
             Hide_AllContentNodes(false);
 
         }
-
         function Q1C_AddContentBox() {
             let doc = document.getElementById('hw_dynamicContent');
             let box0 = document.createElement('div'); //for query
@@ -294,7 +287,6 @@
             doc.appendChild(box0);
             doc.appendChild(box1);
         }
-
         function Q1D_GeneratePage() {
             Hide_AllContentNodes(true);
             Alter_Title('Question 1: Part D');
@@ -483,7 +475,6 @@
             Hide_AllContentNodes(false);
 
         }
-
         function Q2_AddContentBox() {
             let box0 = document.createElement('div');
             let box1 = document.createElement('div');
@@ -545,7 +536,6 @@
             document.getElementById('hw_dynamicContent').appendChild(box1);
             
         }
-
         function Q2_UpdateViewBox() {
             Clear_ByElementId('viewBox');
             Clear_ByElementId('view2Box');
@@ -574,7 +564,6 @@
             t2.removeAttribute('hidden');
             p0.removeAttribute('hidden');
         }
-
         function Q2_AddEntree() {
             let name = document.getElementById('name').value;
             let desc = document.getElementById('desc').value;
@@ -594,8 +583,7 @@
                 locid,
                 undefined,
                 false);
-        }
-        
+        }    
         function Q3AB_GeneratePage() {
             Hide_AllContentNodes(true);
             Alter_Title("Question 3: Part A-B");
@@ -619,7 +607,6 @@
             Q3AB_UpdateTablesOTables();
             Hide_AllContentNodes(false);
         }
-
         function Q3AB_CreateTableHandler() {
             Hide_AllContentNodes(true);
             Q3AB_CreateTable();
@@ -628,7 +615,6 @@
             Q3AB_ButtonSwap();
             Hide_AllContentNodes(false);
         }
-
         function Q3AB_UpdateTablesOTables() {
             Clear_ByElementId('tblOtables');
             db_Tables(
@@ -637,7 +623,6 @@
                 false
             );
         }
-
         function Q3AB_CreateTable() {
             db_CreateEntreeClassTable(
                 function (res) {
@@ -646,7 +631,6 @@
                 false
             );
         }
-
         function Q3AB_ButtonSwap() {
             document.getElementById('createTblBtn').remove();
             let b = document.createElement('input');
@@ -657,12 +641,10 @@
             );
             document.getElementById('hw_dynamicContent').appendChild(b);
         }
-
         function Q3AB_DeleteTableHandler() {
             Clear_DynamicContentNodes();
             Q3AB_GeneratePage();
         }
-
         function Q3AB_DeleteTable() {
             db_DeleteEntreeClassTable(
                 function(res) {},
@@ -670,7 +652,6 @@
                 false
             );
         }
-
         function Q3AB_DescribeEntreeClass() {
             db_TableDescription(
                 Insert_ResponseText,
@@ -680,7 +661,6 @@
             );
             document.getElementById('p0').innerText = "entree_class table description is below.";
         }
-
         function Q3CD_GeneratePage() {
             //hide everything/show Loading...
             Hide_AllContentNodes(true);
@@ -727,7 +707,6 @@
             Hide_AllContentNodes(false);
 
         }
-
         function Q3CD_UpdateEntreeTable() {
             Clear_ByElementId('entreeTbl');
             db_EntreeTable(
@@ -736,7 +715,6 @@
                 false
             );
         }
-
         function Q3CD_UpdateEntreeTableDesc() {
             Clear_ByElementId('entreeDsc');
             db_TableDescription(
@@ -746,7 +724,6 @@
                 false   
             );
         }
-
         function Q3CD_InsertNewColumnHandler() {
             //hide everything
             Hide_AllContentNodes(true);
@@ -776,13 +753,11 @@
             //Unhide everything
             Hide_AllContentNodes(false);
         }
-
         function Q3CD_InsertNewColumn() {
             db_AddEntreeClassColumn(
                 function (res) { }
             );
         }
-
         function Q3CD_DeleteNewColumnHandler() {
             //hide everything
             Hide_AllContentNodes(true);
@@ -812,14 +787,183 @@
             //Unhide everything
             Hide_AllContentNodes(false);
         }
-
         function Q3CD_DeleteNewColumn() {
             db_DeleteEntreeClassColumn(
                 function (res) { }
             );
         }
+        //Q6 Functions
+        function Q6_GeneratePage() {
+            //hide everything
+            Hide_AllContentNodes(true);
 
+            //update the title and headings
+            Alter_Title('Question 6');
+            Alter_Heading('The three tables below are the restaurant, diner, and user tables. Use the sign up form to add a new user to the user table. A trigger will fire after the insertion on user. Depending on the user type a new record will be inserted into the diner or restaurant table')
 
+            //create some elements
+            let dtbl = document.createElement('div'); //diner table
+            let rtbl = document.createElement('div'); //restaurant table
+            let utbl = document.createElement('div'); //user table
+            let f = Q6_SignUpForm(); //Sign Up Form
+            let box0 = document.createElement('div'); //container for form
+            let box1 = document.createElement('div'); //box to hold the rest diner, user tables
+            let trtbl = document.createElement('div'); //will show user_add_t trigger
+
+            //set some attributes
+            Utility_SetAttrVariableValues(
+                [dtbl,rtbl,utbl,f,box0,box1, trtbl],
+                'id',
+                ['dtbl','rtbl','utbl','signUpForm','formBox','uBox','trtbl']
+            );
+
+            Utility_SetAttrVariableValues(
+                [box0, box1, rtbl, dtbl, utbl, trtbl],
+                'style',
+                ['float:left;', 'clear:both;width:100%;', 'float:left;max-width:25%;', 'float:left;max-width:25%;', 'float:left;max-width:50%','float:left;margin-left:3%;max-width: 70%']
+            );
+            //append everything to the document tree
+            Utility_AppendChildern(
+                box0,
+                [f,trtbl]
+            );
+            Utility_AppendChildern(
+                box1,
+                [rtbl,dtbl,utbl]
+            );
+            Utility_AppendChildern(
+                document.getElementById('hw_dynamicContent'),
+                [box0, box1]
+            );
+
+            //Insert all the data and stuff
+            Q6_UpdateDinerTable();
+            Q6_UpdateResturantTable();
+            Q6_UpdateUserTable();
+            Q6_UserAddTrigger();
+            //unhide everything
+            Hide_AllContentNodes(false);
+
+        }
+        function Q6_SignUpForm() {
+            //create elements
+            let fbox = document.createElement('div'); //container to hold the form
+            let f = document.createElement('form'); //form container
+            let name = document.createElement('input'); //user name input text box
+            let email = document.createElement('input'); //user email input text box
+            let type = document.createElement('select'); //user type selection list
+            let password = document.createElement('input'); //user password input text box
+            let submit = document.createElement('input'); //submit button
+
+            //set element attributes
+            Utility_SetAttrVariableValues(
+                [f,name,email,type,password,submit],
+                'id',
+                ['signUpForm', 'name', 'email', 'type', 'password', 'submit']
+            );
+            Utility_SetAttrVariableValues(
+                [name,email,password,submit],
+                'type',
+                ['text','email','password','submit']
+            );
+            Utility_SetAttrVariableValues(
+                [name, email, password],
+                'placeholder',
+                ['Enter User Name...', 'Enter Email...', 'Enter Password...']
+            );
+            Utility_SetAttrIdentical(
+                [name, email, password],
+                'size',
+                '32'
+            );
+            Utility_SetAttr(
+                f,
+                ['action','class'],
+                ['javascript:Q6_SignUpNewUserHandler();','usr-form']
+            );
+            Utility_SetAttrIdentical(
+                [name,email,password],
+                'required',
+                'true'
+            );
+            submit.setAttribute('value', 'Sign Up');
+            fbox.setAttribute('style','float:left;')
+            //get user type select list
+            db_UserTypes(
+                function(res,elem) {
+                    elem.innerHTML = res.responseText;
+                },
+                type,
+                false
+            );
+            //append everything to form container
+            f.appendChild(
+                Utility_AppendForm(
+                    undefined,
+                    ['Name:','Email','Type','Password',''],
+                    [name,email,type,password,submit]
+                )
+            );
+            fbox.appendChild(f);
+            
+            //return the new form container
+            return fbox;
+        }
+        function Q6_UpdateDinerTable() {
+            Clear_ByElementId('dtbl');
+            db_DinerTable(
+                Insert_ResponseText,
+                'dtbl',
+                false
+            );
+        }
+        function Q6_UpdateResturantTable() {
+            Clear_ByElementId('rtbl');
+            db_RestaurantTable(
+                Insert_ResponseText,
+                'rtbl',
+                false
+            );
+        }
+        function Q6_UpdateUserTable() {
+            Clear_ByElementId('utbl');
+            db_UserTable(
+                Insert_ResponseText,
+                'utbl',
+                false
+            );
+        }
+        function Q6_UserAddTrigger() {
+            Clear_ByElementId('trtbl');
+            db_UserAddTrigger(
+                Insert_ResponseText,
+                'trtbl',
+                false
+            );
+        }
+        function Q6_SignUpNewUserHandler() {
+            //hide everything
+            Hide_AllContentNodes(true);
+
+            //insert new user
+            signUp(
+                function (res) {
+                },
+                document.getElementById('name').value,
+                document.getElementById('email').value,
+                document.getElementById('type').value,
+                document.getElementById('password').value,
+                false
+            );
+
+            //Update all the tables
+            Q6_UpdateDinerTable();
+            Q6_UpdateResturantTable();
+            Q6_UpdateUserTable();
+
+            //unhide everything
+            Hide_AllContentNodes(false);
+        }
 
 
         function Utility_SetVarById(v, ids) {
@@ -827,7 +971,6 @@
                 v[i] = document.getElementById(ids[i]).value;
             }
         }
-
         function Utility_AppendChildern(p, c) {
             for (let i = 0; i < c.length; i++) {
                 p.appendChild(c[i]);
@@ -860,6 +1003,7 @@
             }
             return f;
         }
+
         var dispatcher = new DispatchHandler();
         function Init() {
             dispatcher.InsertPageHandler("Q1A", Q1A_GeneratePage, Clear_Page);
@@ -870,6 +1014,7 @@
             dispatcher.InsertPageHandler("Q2", Q2_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3AB", Q3AB_GeneratePage, Clear_Page);
             dispatcher.InsertPageHandler("Q3CD", Q3CD_GeneratePage, Clear_Page);
+            dispatcher.InsertPageHandler("Q6", Q6_GeneratePage, Clear_Page);
         }
         Init();
     </script>

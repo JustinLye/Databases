@@ -1,14 +1,17 @@
-function userTypesSelectList(callBackFunct) {
+function db_UserTypes(callBackFunct, elemID, async) {
 	var x = new XMLHttpRequest();
-	x.onreadystatechange = function() {
+	x.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			callBackFunct(this);
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
 		}
 	};
-	x.open("POST", "php/reqrouter.php", false);
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("POST", "php/reqrouter.php", async);
 	x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	x.send("task=3");
-};
+}
 
 function restaurantSelectList(callBackFunct) {
     var x = new XMLHttpRequest();
@@ -376,5 +379,46 @@ function db_ShowViews(callBackFunct, elemID, async) {
 		async = true;
 	}
 	x.open("GET", "php/ShowViews.php", async);
+	x.send();
+}
+
+function db_DinerTable(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/DinerTable.php", async);
+	x.send();
+}
+
+function db_RestaurantTable(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/RestaurantTable.php", async);
+	x.send();
+}
+function db_UserAddTrigger(callBackFunct, elemID, async) {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			elemID === undefined ? callBackFunct(this) : callBackFunct(this, elemID);
+		}
+	}
+	if (async === undefined) {
+		async = true;
+	}
+	x.open("GET", "php/UserAddTriggerTable.php", async);
 	x.send();
 }
